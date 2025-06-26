@@ -115,6 +115,8 @@ namespace tarkin.BSP.BepInEx
                 yield break;
             }
 
+            Physics.simulationMode = SimulationMode.FixedUpdate;
+
             string sceneName = Path.GetFileNameWithoutExtension(scenePaths[0]);
             Scene scene = SceneManager.GetSceneByName(sceneName);
             if (!scene.isLoaded)
