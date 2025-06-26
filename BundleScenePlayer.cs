@@ -1,8 +1,10 @@
 ﻿using Comfort.Common;
 using EFT;
+using EFT.CameraControl;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using tarkin.bundlesceneplayer.Patches;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -14,18 +16,47 @@ namespace tarkin.bundlesceneplayer
 
         Coroutine operation;
 
+        Camera animatedCamera;
+
+        void Start()
+        {
+            Patch_Door_KickOpen.OnPostfix += () => 
+            { 
+                if (Plugin.Trigger.Value == PlaybackTrigger.DoorBreach)
+                    TriggerPlayback();
+            };
+        }
+
+        private void TriggerPlayback()
+        {
+            if (operation == null)
+            {
+                operation = StartCoroutine(PlaybackBundle(Plugin.BundleName.Value));
+            }
+            else
+            {
+                NotificationManagerClass.DisplayWarningNotification($"Busy!");
+            }
+        }
+
         void Update()
         {
             if (Input.GetKeyDown(Plugin.KeybindPlayback.Value.MainKey))
             {
-                if (operation == null)
-                {
-                    operation = StartCoroutine(PlaybackBundle(Plugin.BundleName.Value));
-                }
-                else
-                {
-                    NotificationManagerClass.DisplayWarningNotification($"Busy!");
-                }
+                TriggerPlayback();
+            }
+
+            if (Input.GetKeyDown(Plugin.KeybindReleaseAnimatedCamera.Value.MainKey))
+            {
+                animatedCamera = null;
+                TogglePlayerCameraController(true);
+            }
+
+            if (animatedCamera != null && CameraClass.Instance.Camera != null)
+            {
+                CameraClass.Instance.Camera.transform.position = animatedCamera.transform.position;
+                CameraClass.Instance.Camera.transform.rotation = animatedCamera.transform.rotation;
+                CameraClass.Instance.Camera.fieldOfView = animatedCamera.fieldOfView;
             }
         }
 
@@ -96,11 +127,46 @@ namespace tarkin.bundlesceneplayer
 
                 ReplaceShadersToNative(loadedScene);
 
+                animatedCamera = CheckSceneCamera(loadedScene);
+                if (animatedCamera != null)
+                {
+                    animatedCamera.enabled = false;
+                    TogglePlayerCameraController(false);
+                }
+
                 loadedAssetBundles.Add(key, (assetBundle, loadedScene));
             }
 
             NotificationManagerClass.DisplayMessageNotification($"'{bundleName}': Playback started");
             operation = null;
+        }
+
+        void TogglePlayerCameraController(bool on)
+        {
+            Player player = Singleton<GameWorld>.Instance?.MainPlayer;
+            if (on && player != null && player.TryGetComponent<HideoutPlayerOwner>(out var hideoutPlayerOwner))
+            {
+                if (!hideoutPlayerOwner.FirstPersonMode)
+                    return;
+            }
+
+            PlayerCameraController playerCameraController = player?.gameObject.GetComponent<PlayerCameraController>();
+            if (playerCameraController != null)
+            {
+                playerCameraController.enabled = on;
+            }
+        }
+
+        Camera CheckSceneCamera(Scene scene)
+        {
+            foreach (GameObject rootGameObject in scene.GetRootGameObjects())
+            {
+                Camera sceneCamera = rootGameObject.GetComponentInChildren<Camera>();
+                if (sceneCamera != null)
+                    return sceneCamera;
+            }
+
+            return null;
         }
 
         private static void ReplaceShadersToNative(Scene loadedScene)
