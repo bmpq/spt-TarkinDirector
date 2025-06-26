@@ -2,10 +2,10 @@
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using System.IO;
-using tarkin.bundlesceneplayer.Patches;
+using tarkin.BSP.BepInEx.Patches;
 using UnityEngine;
 
-namespace tarkin.bundlesceneplayer
+namespace tarkin.BSP.BepInEx
 {
     [BepInPlugin("com.tarkin.bundlesceneplayer", MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
     internal class Plugin : BaseUnityPlugin

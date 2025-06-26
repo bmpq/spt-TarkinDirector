@@ -4,11 +4,11 @@ using EFT.CameraControl;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using tarkin.bundlesceneplayer.Patches;
+using tarkin.BSP.BepInEx.Patches;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace tarkin.bundlesceneplayer
+namespace tarkin.BSP.BepInEx
 {
     internal class BundleScenePlayer : MonoBehaviour
     {

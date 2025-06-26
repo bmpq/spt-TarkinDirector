@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
-    <AssemblyName>bundlesceneplayer</AssemblyName>
+    <AssemblyName>BSP.BepInEx</AssemblyName>
     <LangVersion>latest</LangVersion>
     <Version>0.0.1</Version>
   </PropertyGroup>
