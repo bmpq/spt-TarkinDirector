@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using tarkin.BSP.BepInEx.Patches;
+using tarkin.BSP.Shared;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -134,6 +135,8 @@ namespace tarkin.BSP.BepInEx
                     TogglePlayerCameraController(false);
                 }
 
+                GetHierarchyDisabler(loadedScene);
+
                 loadedAssetBundles.Add(key, (assetBundle, loadedScene));
             }
 
@@ -154,6 +157,18 @@ namespace tarkin.BSP.BepInEx
             if (playerCameraController != null)
             {
                 playerCameraController.enabled = on;
+            }
+        }
+
+        // without this the shared assembly won't get loaded, and the unity scene deserializaiton will fail to find the script
+        static HierarchyPathDisabler hpd;
+        void GetHierarchyDisabler(Scene scene)
+        {
+            foreach (GameObject rootGameObject in scene.GetRootGameObjects())
+            {
+                hpd = rootGameObject.GetComponentInChildren<HierarchyPathDisabler>();
+                if (hpd != null)
+                    break;
             }
         }
 

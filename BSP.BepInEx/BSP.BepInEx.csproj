@@ -19,6 +19,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BSP.Shared\BSP.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="spt-reflection">
       <HintPath>$(SPTPath)\BepinEx\Plugins\spt\spt-reflection.dll</HintPath>
     </Reference>
