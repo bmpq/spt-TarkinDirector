@@ -33,6 +33,8 @@ namespace tarkin.BSP.BepInEx
         Coroutine operation;
 
         Camera animatedCamera;
+        float cameraOverrideFactor;
+        bool cameraOverride;
 
         void Update()
         {
@@ -48,23 +50,35 @@ namespace tarkin.BSP.BepInEx
                 }
             }
 
-            if (Input.GetKeyDown(Plugin.KeybindReleaseAnimatedCamera.Value.MainKey))
+            if (Input.GetKeyDown(Plugin.KeybindToggleCameraOverride.Value.MainKey))
             {
-                animatedCamera = null;
-                TogglePlayerCameraController(true);
+                cameraOverrideFactor = 0;
+
+                cameraOverride = !cameraOverride;
+                if (animatedCamera == null)
+                    cameraOverride = false;
+
+                TogglePlayerCameraController(!cameraOverride);
             }
 
-            if (animatedCamera != null && CameraClass.Instance.Camera != null)
+            if (cameraOverride && animatedCamera != null && CameraClass.Instance.Camera != null)
             {
-                TransformGameCameraToBundleCamera();
+                if (cameraOverrideFactor < 1f)
+                {
+                    cameraOverrideFactor += Time.deltaTime * Plugin.CameraOverrideHandoverSpeed.Value;
+                    if (cameraOverrideFactor > 1f)
+                        cameraOverrideFactor = 1f;
+                }
+
+                TransformGameCameraToBundleCamera(cameraOverrideFactor);
             }
         }
 
-        void TransformGameCameraToBundleCamera()
+        void TransformGameCameraToBundleCamera(float t)
         {
-            CameraClass.Instance.Camera.transform.position = animatedCamera.transform.position;
-            CameraClass.Instance.Camera.transform.rotation = animatedCamera.transform.rotation;
-            CameraClass.Instance.Camera.fieldOfView = animatedCamera.fieldOfView;
+            CameraClass.Instance.Camera.transform.position = Vector3.Lerp(CameraClass.Instance.Camera.transform.position, animatedCamera.transform.position, t);
+            CameraClass.Instance.Camera.transform.rotation = Quaternion.Lerp(CameraClass.Instance.Camera.transform.rotation, animatedCamera.transform.rotation, t);
+            CameraClass.Instance.Camera.fieldOfView = Mathf.Lerp(CameraClass.Instance.Camera.fieldOfView, animatedCamera.fieldOfView, t);
         }
 
         IEnumerator UnloadAllBundlesRoutine()
@@ -187,7 +201,6 @@ namespace tarkin.BSP.BepInEx
             if (animatedCamera != null)
             {
                 animatedCamera.enabled = false;
-                TogglePlayerCameraController(false);
             }
 
             NotificationManagerClass.DisplayMessageNotification($"'{Path.GetFileName(fullPath)}': Scene loaded successfully.");

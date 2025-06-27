@@ -15,8 +15,9 @@ namespace tarkin.BSP.BepInEx
         internal static new ManualLogSource Log;
 
         internal static ConfigEntry<string> BundleName;
+        internal static ConfigEntry<float> CameraOverrideHandoverSpeed;
         internal static ConfigEntry<KeyboardShortcut> KeybindPlayback;
-        internal static ConfigEntry<KeyboardShortcut> KeybindReleaseAnimatedCamera;
+        internal static ConfigEntry<KeyboardShortcut> KeybindToggleCameraOverride;
 
         public static string BundleFullPath
         {
@@ -45,8 +46,10 @@ namespace tarkin.BSP.BepInEx
         {
             BundleName = Config.Bind("General", "Bundle name", "scene_buckshot", "");
 
+            CameraOverrideHandoverSpeed = Config.Bind("General", "CameraOverrideHandoverSpeed", 2f, "");
+
             KeybindPlayback = Config.Bind("Keybinds", "Keybind Playback", new KeyboardShortcut(KeyCode.Insert));
-            KeybindReleaseAnimatedCamera = Config.Bind("Keybinds", "KeybindReleaseAnimatedCamera", new KeyboardShortcut(KeyCode.PageUp));
+            KeybindToggleCameraOverride = Config.Bind("Keybinds", "KeybindToggleCameraOverride", new KeyboardShortcut(KeyCode.PageUp));
         }
     }
 }
