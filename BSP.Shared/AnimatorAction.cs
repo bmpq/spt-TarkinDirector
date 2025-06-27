@@ -11,7 +11,7 @@ namespace tarkin.BSP.Shared
 
         private int _parameterID = 0;
 
-        public void Invoke()
+        protected void Invoke()
         {
             if (animator == null || string.IsNullOrEmpty(animatorParameterName))
             {

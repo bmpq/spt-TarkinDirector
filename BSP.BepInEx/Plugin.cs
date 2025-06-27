@@ -18,7 +18,16 @@ namespace tarkin.BSP.BepInEx
         internal static ConfigEntry<KeyboardShortcut> KeybindPlayback;
         internal static ConfigEntry<KeyboardShortcut> KeybindReleaseAnimatedCamera;
 
-        internal static ConfigEntry<PlaybackTrigger> Trigger;
+        public static string BundleFullPath
+        {
+            get
+            {
+                string gameDirectory = Path.GetDirectoryName(Application.dataPath);
+                string relativePath = Path.Combine(Plugin.AddPathToApplicationDataPath, Plugin.BundleName.Value);
+                string fullPath = Path.Combine(gameDirectory, relativePath);
+                return fullPath;
+            }
+        }
 
         private void Awake()
         {
@@ -29,6 +38,7 @@ namespace tarkin.BSP.BepInEx
             DontDestroyOnLoad(new GameObject("Bundle Scene Player").AddComponent<BundleScenePlayer>().gameObject);
 
             new Patch_Door_KickOpen().Enable();
+            new Patch_WorldInteractiveObject_DoorStateChanged().Enable();
         }
 
         private void InitConfiguration()
@@ -37,14 +47,6 @@ namespace tarkin.BSP.BepInEx
 
             KeybindPlayback = Config.Bind("Keybinds", "Keybind Playback", new KeyboardShortcut(KeyCode.Insert));
             KeybindReleaseAnimatedCamera = Config.Bind("Keybinds", "KeybindReleaseAnimatedCamera", new KeyboardShortcut(KeyCode.PageUp));
-
-            Trigger = Config.Bind("General", "PlaybackTrigger", PlaybackTrigger.KeybindOnly);
         }
-    }
-
-    internal enum PlaybackTrigger
-    {
-        KeybindOnly,
-        DoorBreach
     }
 }

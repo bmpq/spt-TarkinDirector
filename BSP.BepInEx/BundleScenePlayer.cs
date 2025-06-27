@@ -1,9 +1,12 @@
 ﻿using Comfort.Common;
 using EFT;
 using EFT.CameraControl;
+using EFT.Interactive;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using tarkin.BSP.BepInEx.Patches;
 using tarkin.BSP.Shared;
 using UnityEngine;
@@ -13,38 +16,36 @@ namespace tarkin.BSP.BepInEx
 {
     internal class BundleScenePlayer : MonoBehaviour
     {
-        private static Dictionary<string, (AssetBundle, Scene)> loadedAssetBundles = [];
+        private class LoadedBundleInfo
+        {
+            public AssetBundle Bundle { get; }
+            public Scene Scene { get; }
+
+            public LoadedBundleInfo(AssetBundle bundle, Scene scene)
+            {
+                Bundle = bundle;
+                Scene = scene;
+            }
+        }
+
+        private Dictionary<string, LoadedBundleInfo> loadedAssetBundles = new Dictionary<string, LoadedBundleInfo>();
 
         Coroutine operation;
 
         Camera animatedCamera;
 
-        void Start()
-        {
-            Patch_Door_KickOpen.OnPostfix += () => 
-            { 
-                if (Plugin.Trigger.Value == PlaybackTrigger.DoorBreach)
-                    TriggerPlayback();
-            };
-        }
-
-        private void TriggerPlayback()
-        {
-            if (operation == null)
-            {
-                operation = StartCoroutine(PlaybackBundle(Plugin.BundleName.Value));
-            }
-            else
-            {
-                NotificationManagerClass.DisplayWarningNotification($"Busy!");
-            }
-        }
-
         void Update()
         {
             if (Input.GetKeyDown(Plugin.KeybindPlayback.Value.MainKey))
             {
-                TriggerPlayback();
+                if (operation == null)
+                {
+                    operation = StartCoroutine(ReloadBundle(Plugin.BundleFullPath));
+                }
+                else
+                {
+                    NotificationManagerClass.DisplayWarningNotification($"Busy!");
+                }
             }
 
             if (Input.GetKeyDown(Plugin.KeybindReleaseAnimatedCamera.Value.MainKey))
@@ -55,95 +56,141 @@ namespace tarkin.BSP.BepInEx
 
             if (animatedCamera != null && CameraClass.Instance.Camera != null)
             {
-                CameraClass.Instance.Camera.transform.position = animatedCamera.transform.position;
-                CameraClass.Instance.Camera.transform.rotation = animatedCamera.transform.rotation;
-                CameraClass.Instance.Camera.fieldOfView = animatedCamera.fieldOfView;
+                TransformGameCameraToBundleCamera();
             }
         }
 
-        IEnumerator PlaybackBundle(string bundleName)
+        void TransformGameCameraToBundleCamera()
         {
-            if (!Singleton<GameWorld>.Instantiated)
+            CameraClass.Instance.Camera.transform.position = animatedCamera.transform.position;
+            CameraClass.Instance.Camera.transform.rotation = animatedCamera.transform.rotation;
+            CameraClass.Instance.Camera.fieldOfView = animatedCamera.fieldOfView;
+        }
+
+        IEnumerator UnloadAllBundlesRoutine()
+        {
+            try
             {
-                NotificationManagerClass.DisplayWarningNotification($"No game world!");
+                List<string> paths = loadedAssetBundles.Keys.ToList();
+                foreach (var path in paths)
+                {
+                    yield return StartCoroutine(UnloadBundleRoutine(path));
+                }
+            }
+            finally
+            {
                 operation = null;
+            }
+        }
+
+        IEnumerator ReloadBundle(string fullPath)
+        {
+            try
+            {
+                if (loadedAssetBundles.ContainsKey(fullPath))
+                {
+                    yield return StartCoroutine(UnloadBundleRoutine(fullPath));
+                    NotificationManagerClass.DisplayMessageNotification($"'{Path.GetFileName(fullPath)}' unloaded.");
+                }
+                
+                yield return StartCoroutine(LoadBundleRoutine(fullPath));
+            }
+            finally
+            {
+                operation = null;
+            }
+        }
+        
+        IEnumerator UnloadBundleRoutine(string fullPath)
+        {
+            if (!loadedAssetBundles.TryGetValue(fullPath, out var info))
+            {
                 yield break;
             }
 
-            string gameDirectory = Path.GetDirectoryName(Application.dataPath);
-            string relativePath = Path.Combine(Plugin.AddPathToApplicationDataPath, bundleName);
-            string fullPath = Path.Combine(gameDirectory, relativePath);
-
-            string key = System.IO.Path.GetFileName(fullPath);
-
-            // unloading the bundle and scene is intended, the bundle file could have been changed during runtime from outside
-            if (loadedAssetBundles.ContainsKey(key))
+            NotificationManagerClass.DisplayMessageNotification($"Unloading '{Path.GetFileName(fullPath)}'...");
+            
+            if (animatedCamera != null)
             {
-                NotificationManagerClass.DisplayMessageNotification($"Unloading '{bundleName}'");
+                animatedCamera = null;
+            }
 
-                AsyncOperation asyncOperation = SceneManager.UnloadSceneAsync(loadedAssetBundles[key].Item2);
-
+            if (info.Scene.isLoaded)
+            {
+                AsyncOperation asyncOperation = SceneManager.UnloadSceneAsync(info.Scene);
                 while (!asyncOperation.isDone)
                 {
                     yield return null;
                 }
+            }
 
-                loadedAssetBundles[key].Item1.Unload(true);
-                loadedAssetBundles.Remove(key);
+            info.Bundle.Unload(true);
+            loadedAssetBundles.Remove(fullPath);
+        }
+
+        IEnumerator LoadBundleRoutine(string fullPath)
+        {
+            if (!Singleton<GameWorld>.Instantiated)
+            {
+                NotificationManagerClass.DisplayWarningNotification("Cannot load bundle: Not in raid!");
+                yield break;
             }
 
             if (!File.Exists(fullPath))
             {
-                NotificationManagerClass.DisplayWarningNotification($"'{bundleName}' doesn't exist!");
-                operation = null;
+                NotificationManagerClass.DisplayWarningNotification($"Bundle not found: '{Path.GetFileName(fullPath)}'");
                 yield break;
             }
 
-            AssetBundle assetBundle = AssetBundle.LoadFromFile(fullPath);
+            NotificationManagerClass.DisplayMessageNotification($"Loading '{Path.GetFileName(fullPath)}'...");
+
+            AssetBundleCreateRequest bundleRequest = AssetBundle.LoadFromFileAsync(fullPath);
+            yield return bundleRequest;
+
+            AssetBundle assetBundle = bundleRequest.assetBundle;
             if (assetBundle == null)
             {
-                NotificationManagerClass.DisplayWarningNotification($"Error loading '{bundleName}'!");
-                operation = null;
+                NotificationManagerClass.DisplayWarningNotification($"Error loading asset bundle!");
                 yield break;
             }
 
             string[] scenePaths = assetBundle.GetAllScenePaths();
             if (scenePaths.Length == 0)
             {
-                NotificationManagerClass.DisplayWarningNotification($"'{bundleName}' is not a scene bundle!");
-                operation = null;
+                NotificationManagerClass.DisplayWarningNotification($"'{Path.GetFileName(fullPath)}' is not a scene bundle!");
+                assetBundle.Unload(false);
                 yield break;
             }
 
-            Physics.simulationMode = SimulationMode.FixedUpdate;
-
             string sceneName = Path.GetFileNameWithoutExtension(scenePaths[0]);
-            Scene scene = SceneManager.GetSceneByName(sceneName);
-            if (!scene.isLoaded)
+            AsyncOperation asyncOp = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
+            while (!asyncOp.isDone)
             {
-                AsyncOperation asyncOp = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
-                while (!asyncOp.isDone)
-                {
-                    yield return null;
-                }
-                Scene loadedScene = SceneManager.GetSceneByName(sceneName);
-
-                ReplaceShadersToNative(loadedScene);
-
-                animatedCamera = CheckSceneCamera(loadedScene);
-                if (animatedCamera != null)
-                {
-                    animatedCamera.enabled = false;
-                    TogglePlayerCameraController(false);
-                }
-
-                GetHierarchyDisabler(loadedScene);
-
-                loadedAssetBundles.Add(key, (assetBundle, loadedScene));
+                yield return null;
             }
 
-            NotificationManagerClass.DisplayMessageNotification($"'{bundleName}': Playback started");
-            operation = null;
+            Scene loadedScene = SceneManager.GetSceneByName(sceneName);
+            if (!loadedScene.isLoaded)
+            {
+                NotificationManagerClass.DisplayWarningNotification($"Failed to load scene '{sceneName}' from bundle.");
+                assetBundle.Unload(true);
+                yield break;
+            }
+
+            var bundleInfo = new LoadedBundleInfo(assetBundle, loadedScene);
+            loadedAssetBundles.Add(fullPath, bundleInfo);
+
+            ReplaceShadersToNative(loadedScene);
+            ParseAndSubscribeTriggers(bundleInfo);
+
+            animatedCamera = FindSceneCamera(loadedScene);
+            if (animatedCamera != null)
+            {
+                animatedCamera.enabled = false;
+                TogglePlayerCameraController(false);
+            }
+
+            NotificationManagerClass.DisplayMessageNotification($"'{Path.GetFileName(fullPath)}': Scene loaded successfully.");
         }
 
         void TogglePlayerCameraController(bool on)
@@ -162,19 +209,40 @@ namespace tarkin.BSP.BepInEx
             }
         }
 
-        // without this the shared assembly won't get loaded, and the unity scene deserializaiton will fail to find the script
-        static HierarchyPathDisabler hpd;
-        void GetHierarchyDisabler(Scene scene)
+        private void ParseAndSubscribeTriggers(LoadedBundleInfo info)
         {
-            foreach (GameObject rootGameObject in scene.GetRootGameObjects())
+            foreach (var rootGameObject in info.Scene.GetRootGameObjects())
             {
-                hpd = rootGameObject.GetComponentInChildren<HierarchyPathDisabler>();
-                if (hpd != null)
-                    break;
+                foreach (var trigger in rootGameObject.GetComponentsInChildren<EFTTrigger>(true))
+                {
+                    switch (trigger.trigger)
+                    {
+                        case EFTTrigger.Trigger.DoorBreach:
+                            {
+                                Patch_Door_KickOpen.OnPostfix += trigger.Execute;
+                                trigger.OnDestroyAction = () => Patch_Door_KickOpen.OnPostfix -= trigger.Execute;
+                                break;
+                            }
+                        case EFTTrigger.Trigger.DoorOpen:
+                            {
+                                Action<EDoorState> action = (state) => { if (state == EDoorState.Open) trigger.Execute(); };
+                                Patch_WorldInteractiveObject_DoorStateChanged.OnPostfix += action;
+                                trigger.OnDestroyAction = () => Patch_WorldInteractiveObject_DoorStateChanged.OnPostfix -= action;
+                                break;
+                            }
+                        case EFTTrigger.Trigger.DoorShut:
+                            {
+                                Action<EDoorState> action = (state) => { if (state == EDoorState.Shut) trigger.Execute(); };
+                                Patch_WorldInteractiveObject_DoorStateChanged.OnPostfix += action;
+                                trigger.OnDestroyAction = () => Patch_WorldInteractiveObject_DoorStateChanged.OnPostfix -= action;
+                                break;
+                            }
+                    }
+                }
             }
         }
 
-        Camera CheckSceneCamera(Scene scene)
+        Camera FindSceneCamera(Scene scene)
         {
             foreach (GameObject rootGameObject in scene.GetRootGameObjects())
             {
