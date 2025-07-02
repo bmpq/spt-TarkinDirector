@@ -195,13 +195,15 @@ namespace tarkin.BSP.BepInEx
             loadedAssetBundles.Add(fullPath, bundleInfo);
 
             ReplaceShadersToNative(loadedScene);
-            ParseAndSubscribeTriggers(bundleInfo);
+            ParseAndSubscribeTriggers(loadedScene);
 
             animatedCamera = FindSceneCamera(loadedScene);
             if (animatedCamera != null)
             {
                 animatedCamera.enabled = false;
             }
+
+            Physics.simulationMode = SimulationMode.FixedUpdate;
 
             NotificationManagerClass.DisplayMessageNotification($"'{Path.GetFileName(fullPath)}': Scene loaded successfully.");
         }
@@ -222,9 +224,9 @@ namespace tarkin.BSP.BepInEx
             }
         }
 
-        private void ParseAndSubscribeTriggers(LoadedBundleInfo info)
+        private void ParseAndSubscribeTriggers(Scene scene)
         {
-            foreach (var rootGameObject in info.Scene.GetRootGameObjects())
+            foreach (var rootGameObject in scene.GetRootGameObjects())
             {
                 foreach (var trigger in rootGameObject.GetComponentsInChildren<EFTTrigger>(true))
                 {
