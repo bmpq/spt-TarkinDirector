@@ -38,6 +38,18 @@ namespace tarkin.BSP.BepInEx
 
         void Update()
         {
+            if (Input.GetKeyDown(Plugin.KeybindUnloadAll.Value.MainKey))
+            {
+                if (operation == null)
+                {
+                    operation = StartCoroutine(UnloadAllBundlesRoutine());
+                }
+                else
+                {
+                    NotificationManagerClass.DisplayWarningNotification($"Busy!");
+                }
+            }
+
             if (Input.GetKeyDown(Plugin.KeybindPlayback.Value.MainKey))
             {
                 if (operation == null)

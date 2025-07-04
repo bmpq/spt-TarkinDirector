@@ -18,6 +18,7 @@ namespace tarkin.BSP.BepInEx
         internal static ConfigEntry<float> CameraOverrideHandoverSpeed;
         internal static ConfigEntry<KeyboardShortcut> KeybindPlayback;
         internal static ConfigEntry<KeyboardShortcut> KeybindToggleCameraOverride;
+        internal static ConfigEntry<KeyboardShortcut> KeybindUnloadAll;
 
         public static string BundleFullPath
         {
@@ -49,6 +50,7 @@ namespace tarkin.BSP.BepInEx
             CameraOverrideHandoverSpeed = Config.Bind("General", "CameraOverrideHandoverSpeed", 2f, "");
 
             KeybindPlayback = Config.Bind("Keybinds", "Keybind Playback", new KeyboardShortcut(KeyCode.Insert));
+            KeybindUnloadAll = Config.Bind("Keybinds", "Keybind Unload All", new KeyboardShortcut(KeyCode.Delete));
             KeybindToggleCameraOverride = Config.Bind("Keybinds", "KeybindToggleCameraOverride", new KeyboardShortcut(KeyCode.PageUp));
         }
     }
