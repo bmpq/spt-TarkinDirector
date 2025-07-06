@@ -184,7 +184,7 @@ namespace tarkin.BSP.BepInEx
             if (scenePaths.Length == 0)
             {
                 NotificationManagerClass.DisplayWarningNotification($"'{Path.GetFileName(fullPath)}' is not a scene bundle!");
-                assetBundle.Unload(false);
+                assetBundle?.Unload(false);
                 yield break;
             }
 
@@ -199,21 +199,31 @@ namespace tarkin.BSP.BepInEx
             if (!loadedScene.isLoaded)
             {
                 NotificationManagerClass.DisplayWarningNotification($"Failed to load scene '{sceneName}' from bundle.");
-                assetBundle.Unload(true);
+                assetBundle?.Unload(true);
+                yield break;
+            }
+
+            try
+            {
+                ReplaceShadersToNative(loadedScene);
+                ParseAndSubscribeTriggers(loadedScene);
+
+                animatedCamera = FindSceneCamera(loadedScene);
+                if (animatedCamera != null)
+                {
+                    animatedCamera.enabled = false;
+                }
+            }
+            catch (Exception e)
+            {
+                NotificationManagerClass.DisplayWarningNotification($"Failed to init scene '{sceneName}'");
+                NotificationManagerClass.DisplayWarningNotification($"{e.Message}");
+                assetBundle?.Unload(true);
                 yield break;
             }
 
             var bundleInfo = new LoadedBundleInfo(assetBundle, loadedScene);
             loadedAssetBundles.Add(fullPath, bundleInfo);
-
-            ReplaceShadersToNative(loadedScene);
-            ParseAndSubscribeTriggers(loadedScene);
-
-            animatedCamera = FindSceneCamera(loadedScene);
-            if (animatedCamera != null)
-            {
-                animatedCamera.enabled = false;
-            }
 
             Physics.simulationMode = SimulationMode.FixedUpdate;
 
