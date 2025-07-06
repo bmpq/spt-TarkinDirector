@@ -3,7 +3,7 @@
 namespace tarkin.BSP.Shared
 {
     [RequireComponent(typeof(Collider))]
-    internal class Trigger : AnimatorAction
+    internal class PhysicsTrigger : AnimatorAction
     {
         enum Condition
         {

@@ -4,6 +4,7 @@ namespace tarkin.BSP.Shared
 {
     internal class InputTrigger : AnimatorAction
     {
+        [Space(10)]
         public KeyCode keycode;
 
         void Update()
