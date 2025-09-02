@@ -5,7 +5,7 @@ using System;
 using System.Reflection;
 using UnityEngine;
 
-namespace tarkin.BSP.BepInEx.Patches
+namespace tarkin.BSP.Bep.Patches
 {
     internal class Patch_WorldInteractiveObject_DoorStateChanged : ModulePatch
     {

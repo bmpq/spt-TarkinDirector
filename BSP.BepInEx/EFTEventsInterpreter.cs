@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace tarkin.BSP.BepInEx
+namespace tarkin.BSP.Bep
 {
     internal static class EFTEventsInterpreter
     {

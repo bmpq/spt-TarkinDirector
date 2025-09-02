@@ -6,7 +6,7 @@ using System;
 using System.Reflection;
 using UnityEngine;
 
-namespace tarkin.BSP.BepInEx.Patches
+namespace tarkin.BSP.Bep.Patches
 {
     internal class Patch_Door_KickOpen : ModulePatch
     {

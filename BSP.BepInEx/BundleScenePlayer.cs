@@ -7,12 +7,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using tarkin.BSP.BepInEx.Patches;
+using System.Reflection;
+using tarkin.BSP.Bep.Patches;
 using tarkin.BSP.Shared;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace tarkin.BSP.BepInEx
+namespace tarkin.BSP.Bep
 {
     internal class BundleScenePlayer : MonoBehaviour
     {
@@ -54,6 +55,8 @@ namespace tarkin.BSP.BepInEx
             {
                 if (operation == null)
                 {
+                    PrewarmAssemblies();
+
                     operation = StartCoroutine(ReloadBundle(Plugin.BundleFullPath));
                 }
                 else
@@ -83,6 +86,34 @@ namespace tarkin.BSP.BepInEx
                 }
 
                 TransformGameCameraToBundleCamera(cameraOverrideFactor);
+            }
+        }
+
+        private void PrewarmAssemblies()
+        {
+            var mainAss = typeof(MyMovingPlatform);
+
+            string[] assembliesToLoad = Plugin.PrewarmAssemblies.Value.Split(',').Select(s => s.Trim()).Where(s => !string.IsNullOrEmpty(s)).ToArray();
+            foreach (var assName in assembliesToLoad)
+            {
+                try
+                {
+                    string fullPath = Path.Combine(BepInEx.Paths.PluginPath, Plugin.AddAssembliesPathToPluginPath, assName + ".dll");
+                    if (File.Exists(fullPath))
+                    {
+                        Assembly asm = Assembly.LoadFrom(fullPath);
+                    }
+                    else
+                    {
+                        Plugin.Log.LogError($"File does not exist: {fullPath}");
+                        continue;
+                    }
+                }
+                catch
+                {
+                    Plugin.Log.LogError($"BSP: Failed to load assembly {assName}.dll!");
+                    continue;
+                }
             }
         }
 
