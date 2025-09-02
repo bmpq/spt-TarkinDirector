@@ -237,7 +237,6 @@ namespace tarkin.BSP.Bep
             try
             {
                 ParseSceneSettings(loadedScene);
-                ReplaceShadersToNative(loadedScene);
                 ParseAndSubscribeTriggers(loadedScene);
                 ParseMovingPlatforms(loadedScene);
 
@@ -388,30 +387,6 @@ namespace tarkin.BSP.Bep
             }
 
             return null;
-        }
-
-        private static void ReplaceShadersToNative(Scene loadedScene)
-        {
-            foreach (GameObject rootGameObject in loadedScene.GetRootGameObjects())
-            {
-                foreach (var rend in rootGameObject.GetComponentsInChildren<Renderer>())
-                {
-                    foreach (var mat in rend.materials)
-                    {
-                        if (mat == null || mat.shader == null)
-                            continue;
-
-                        Shader nativeShader = Shader.Find(mat.shader.name);
-                        if (nativeShader != null)
-                        {
-                            mat.shader = nativeShader;
-                            Debug.Log($"Replaced shader '{mat.shader.name}'");
-                        }
-                        else
-                            Debug.LogError($"shader '{mat.shader.name}' not found!");
-                    }
-                }
-            }
         }
     }
 }
