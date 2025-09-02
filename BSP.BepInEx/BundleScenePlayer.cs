@@ -205,6 +205,7 @@ namespace tarkin.BSP.BepInEx
 
             try
             {
+                ParseSceneSettings(loadedScene);
                 ReplaceShadersToNative(loadedScene);
                 ParseAndSubscribeTriggers(loadedScene);
                 ParseMovingPlatforms(loadedScene);
@@ -226,8 +227,6 @@ namespace tarkin.BSP.BepInEx
             var bundleInfo = new LoadedBundleInfo(assetBundle, loadedScene);
             loadedAssetBundles.Add(fullPath, bundleInfo);
 
-            Physics.simulationMode = SimulationMode.FixedUpdate;
-
             NotificationManagerClass.DisplayMessageNotification($"'{Path.GetFileName(fullPath)}': Scene loaded successfully.");
         }
 
@@ -244,6 +243,18 @@ namespace tarkin.BSP.BepInEx
             if (playerCameraController != null)
             {
                 playerCameraController.enabled = on;
+            }
+        }
+
+        private void ParseSceneSettings(Scene scene)
+        {
+            foreach (var rootGameObject in scene.GetRootGameObjects())
+            {
+                if (rootGameObject.TryGetComponent<SceneSettings>(out var settings))
+                {
+                    Physics.simulationMode = settings.physicsMode;
+                    return;
+                }
             }
         }
 
