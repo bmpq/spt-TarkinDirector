@@ -9,7 +9,6 @@
 
   <PropertyGroup>
     <SPTPath>E:\Games\SPT_3.11</SPTPath>
-    <UnityEditorPath>T:\extract\UNITYPROJECT_EFT35392\Assets\GenericScenePlayer</UnityEditorPath>
     <RootNamespace>tarkin.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
   </PropertyGroup>
 
@@ -29,8 +28,5 @@
 
   <Target Name="CopyDllAfterBuild" AfterTargets="Build">
     <Copy SourceFiles="$(OutputPath)$(AssemblyName).dll" DestinationFolder="$(SPTPath)\BepInEx\plugins\tarkin" />
-  </Target>
-  <Target Name="CopyDllToUnityEditor" AfterTargets="Build">
-    <Copy SourceFiles="$(OutputPath)$(AssemblyName).dll" DestinationFolder="$(UnityEditorPath)" />
   </Target>
 </Project>
