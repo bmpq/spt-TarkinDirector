@@ -36,6 +36,8 @@ namespace tarkin.BSP.Bep
 
             DontDestroyOnLoad(new GameObject("Bundle Scene Player").AddComponent<BundleScenePlayer>().gameObject);
 
+            new EFTPersistentAudioSourceHandler();
+
             new Patch_Door_KickOpen().Enable();
             new Patch_WorldInteractiveObject_DoorStateChanged().Enable();
         }
