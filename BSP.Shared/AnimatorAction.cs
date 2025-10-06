@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace tarkin.BSP.Shared
 {
-    public class AnimatorAction : MonoBehaviour
+    public abstract class AnimatorAction : MonoBehaviour
     {
         public Animator animator;
 

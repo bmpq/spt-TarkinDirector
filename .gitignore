@@ -30,6 +30,8 @@ bld/
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/
+.bin/
+.obj/
 
 # for assemblies
 References/

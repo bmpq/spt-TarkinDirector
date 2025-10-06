@@ -7,6 +7,8 @@ using System.Reflection;
 using tarkin.BSP.Bep.Patches;
 using UnityEngine;
 using tarkin;
+using tarkin.SimpleTransformAnimation.Player;
+using tarkin.SimpleTransformAnimation.Format;
 
 namespace tarkin.BSP.Bep
 {
@@ -25,11 +27,13 @@ namespace tarkin.BSP.Bep
         internal static ConfigEntry<KeyboardShortcut> KeybindUnloadAll;
 
         internal static ConfigEntry<string> PrewarmAssemblies;
+        internal static ConfigEntry<bool> Silent;
 
         public static string BundleFullPath => Path.Combine(BepInEx.Paths.PluginPath, AddBundlesPathToPluginPath, BundleName.Value);
 
         private void Awake()
         {
+            var prewarm = (typeof(BoneMapping), typeof(NodeData));
             InitConfiguration();
 
             Log = base.Logger;
@@ -55,6 +59,8 @@ namespace tarkin.BSP.Bep
             KeybindPlayback = Config.Bind("Keybinds", "Keybind Playback", new KeyboardShortcut(KeyCode.Insert));
             KeybindUnloadAll = Config.Bind("Keybinds", "Keybind Unload All", new KeyboardShortcut(KeyCode.Delete));
             KeybindToggleCameraOverride = Config.Bind("Keybinds", "KeybindToggleCameraOverride", new KeyboardShortcut(KeyCode.PageUp));
+
+            Silent = Config.Bind("General", "Silent", false);
         }
     }
 }

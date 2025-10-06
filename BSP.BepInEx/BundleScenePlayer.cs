@@ -55,12 +55,11 @@ namespace tarkin.BSP.Bep
             {
                 if (operation == null)
                 {
-                    PrewarmAssemblies();
-
                     operation = StartCoroutine(ReloadBundle(Plugin.BundleFullPath));
                 }
                 else
                 {
+                    if (!Plugin.Silent.Value)
                     NotificationManagerClass.DisplayWarningNotification($"Busy!");
                 }
             }
@@ -86,34 +85,6 @@ namespace tarkin.BSP.Bep
                 }
 
                 TransformGameCameraToBundleCamera(cameraOverrideFactor);
-            }
-        }
-
-        private void PrewarmAssemblies()
-        {
-            var mainAss = typeof(MyMovingPlatform);
-
-            string[] assembliesToLoad = Plugin.PrewarmAssemblies.Value.Split(',').Select(s => s.Trim()).Where(s => !string.IsNullOrEmpty(s)).ToArray();
-            foreach (var assName in assembliesToLoad)
-            {
-                try
-                {
-                    string fullPath = Path.Combine(BepInEx.Paths.PluginPath, Plugin.AddAssembliesPathToPluginPath, assName + ".dll");
-                    if (File.Exists(fullPath))
-                    {
-                        Assembly asm = Assembly.LoadFrom(fullPath);
-                    }
-                    else
-                    {
-                        Plugin.Log.LogError($"File does not exist: {fullPath}");
-                        continue;
-                    }
-                }
-                catch
-                {
-                    Plugin.Log.LogError($"BSP: Failed to load assembly {assName}.dll!");
-                    continue;
-                }
             }
         }
 
@@ -147,7 +118,8 @@ namespace tarkin.BSP.Bep
                 if (loadedAssetBundles.ContainsKey(fullPath))
                 {
                     yield return StartCoroutine(UnloadBundleRoutine(fullPath));
-                    NotificationManagerClass.DisplayMessageNotification($"'{Path.GetFileName(fullPath)}' unloaded.");
+                    if (!Plugin.Silent.Value)
+                        NotificationManagerClass.DisplayMessageNotification($"'{Path.GetFileName(fullPath)}' unloaded.");
                 }
                 
                 yield return StartCoroutine(LoadBundleRoutine(fullPath));
@@ -165,7 +137,8 @@ namespace tarkin.BSP.Bep
                 yield break;
             }
 
-            NotificationManagerClass.DisplayMessageNotification($"Unloading '{Path.GetFileName(fullPath)}'...");
+            if (!Plugin.Silent.Value)
+                NotificationManagerClass.DisplayMessageNotification($"Unloading '{Path.GetFileName(fullPath)}'...");
             
             if (animatedCamera != null)
             {
@@ -199,7 +172,8 @@ namespace tarkin.BSP.Bep
                 yield break;
             }
 
-            NotificationManagerClass.DisplayMessageNotification($"Loading '{Path.GetFileName(fullPath)}'...");
+            if (!Plugin.Silent.Value)
+                NotificationManagerClass.DisplayMessageNotification($"Loading '{Path.GetFileName(fullPath)}'...");
 
             AssetBundleCreateRequest bundleRequest = AssetBundle.LoadFromFileAsync(fullPath);
             yield return bundleRequest;
@@ -257,7 +231,8 @@ namespace tarkin.BSP.Bep
             var bundleInfo = new LoadedBundleInfo(assetBundle, loadedScene);
             loadedAssetBundles.Add(fullPath, bundleInfo);
 
-            NotificationManagerClass.DisplayMessageNotification($"'{Path.GetFileName(fullPath)}': Scene loaded successfully.");
+            if (!Plugin.Silent.Value)
+                NotificationManagerClass.DisplayMessageNotification($"'{Path.GetFileName(fullPath)}': Scene loaded successfully.");
         }
 
         void TogglePlayerCameraController(bool on)

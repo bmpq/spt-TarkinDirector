@@ -1,7 +1,9 @@
 {
     "name": "BSP.Shared",
     "rootNamespace": "",
-    "references": [],
+    "references": [
+        "GUID:375415e447b852644ac139b4fefaf0bc"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
