@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using tarkin.BSP.Shared;
 
-namespace tarkin.BSP.Shared
+namespace tarkin.BSP.Editor
 {
     internal class PersistentAudioSourceEditorPreview : MonoBehaviour
     {

@@ -5,6 +5,13 @@ namespace tarkin.BSP.Shared
 {
     public class EFTTrigger : AnimatorAction
     {
+        public static void SendEFTEvent(Trigger trigger)
+        {
+            onEFTEvent?.Invoke(trigger);
+        }
+
+        private static Action<Trigger> onEFTEvent;
+
         public enum Trigger
         { 
             DoorBreach,
@@ -12,17 +19,23 @@ namespace tarkin.BSP.Shared
             DoorShut
         }
 
-        public Trigger trigger;
-        public Action OnDestroyAction;
+        [SerializeField]
+        private Trigger trigger;
 
-        public void Execute()
+        void OnEnable()
         {
-            Invoke();
+            onEFTEvent += ReceiveEvent;
         }
 
-        private void OnDestroy()
+        void OnDisable()
         {
-            OnDestroyAction?.Invoke();
+            onEFTEvent -= ReceiveEvent;
+        }
+
+        void ReceiveEvent(Trigger trigger)
+        {
+            if (this.trigger == trigger)
+                Invoke();
         }
     }
 }

@@ -210,8 +210,6 @@ namespace tarkin.BSP.Bep
 
             try
             {
-                ParseSceneSettings(loadedScene);
-                ParseAndSubscribeTriggers(loadedScene);
                 ParseMovingPlatforms(loadedScene);
 
                 animatedCamera = FindSceneCamera(loadedScene);
@@ -250,52 +248,6 @@ namespace tarkin.BSP.Bep
                 playerCameraController.enabled = on;
             }
         }
-
-        private void ParseSceneSettings(Scene scene)
-        {
-            foreach (var rootGameObject in scene.GetRootGameObjects())
-            {
-                if (rootGameObject.TryGetComponent<SceneSettings>(out var settings))
-                {
-                    Physics.simulationMode = settings.physicsMode;
-                    return;
-                }
-            }
-        }
-
-        private void ParseAndSubscribeTriggers(Scene scene)
-        {
-            foreach (var rootGameObject in scene.GetRootGameObjects())
-            {
-                foreach (var trigger in rootGameObject.GetComponentsInChildren<EFTTrigger>(true))
-                {
-                    switch (trigger.trigger)
-                    {
-                        case EFTTrigger.Trigger.DoorBreach:
-                            {
-                                Patch_Door_KickOpen.OnPostfix += trigger.Execute;
-                                trigger.OnDestroyAction = () => Patch_Door_KickOpen.OnPostfix -= trigger.Execute;
-                                break;
-                            }
-                        case EFTTrigger.Trigger.DoorOpen:
-                            {
-                                Action<EDoorState> action = (state) => { if (state == EDoorState.Open) trigger.Execute(); };
-                                Patch_WorldInteractiveObject_DoorStateChanged.OnPostfix += action;
-                                trigger.OnDestroyAction = () => Patch_WorldInteractiveObject_DoorStateChanged.OnPostfix -= action;
-                                break;
-                            }
-                        case EFTTrigger.Trigger.DoorShut:
-                            {
-                                Action<EDoorState> action = (state) => { if (state == EDoorState.Shut) trigger.Execute(); };
-                                Patch_WorldInteractiveObject_DoorStateChanged.OnPostfix += action;
-                                trigger.OnDestroyAction = () => Patch_WorldInteractiveObject_DoorStateChanged.OnPostfix -= action;
-                                break;
-                            }
-                    }
-                }
-            }
-        }
-
 
         // doing this because the shared assembly doesn't depend on game assembly (doesn't know about Player)
         class MovingPlatformMediator
