@@ -21,8 +21,8 @@ namespace tarkin.BSP.Bep
         {
             if (!translation.ContainsKey(requester))
             {
-                BetterSource source = Singleton<BetterAudio>.Instance.GetSource(BetterAudio.AudioSourceGroupType.Environment, true);
-                source.SetMixerGroup(MonoBehaviourSingleton<BetterAudio>.Instance.VehicleOutMixer);
+                BetterSource source = Singleton<BetterAudio>.Instance.GetSource(BetterAudio.AudioSourceGroupType.Character, true);
+                source.SetMixerGroup(MonoBehaviourSingleton<BetterAudio>.Instance.ObservedPlayerMovementMixer);
                 source.StartTrackingPosition(requester.transform, default(Vector3));
                 source.Loop = loop;
 
