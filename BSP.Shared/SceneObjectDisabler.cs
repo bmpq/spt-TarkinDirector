@@ -7,13 +7,21 @@ namespace tarkin.BSP.Shared
 {
     public class SceneObjectDisabler : MonoBehaviour
     {
+        public Mode mode;
         public string targetSceneName = "bunker_2";
+
+        public enum Mode
+        {
+            DisablePermanent,
+            DisableTemporary,
+            Destroy
+        }
 
         public List<string> pathsToDisable;
 
-        public bool destroyInstead = false;
-
         public float delay;
+
+        Dictionary<GameObject, bool> originalStates = new Dictionary<GameObject, bool>();
 
         void Start()
         {
@@ -24,6 +32,14 @@ namespace tarkin.BSP.Shared
         void OnDestroy()
         {
             SceneManager.sceneLoaded -= OnSceneLoaded;
+
+            if (mode == Mode.DisableTemporary)
+            {
+                foreach (var kvp in originalStates)
+                {
+                    kvp.Key.SetActive(kvp.Value);
+                }
+            }
         }
 
         private void CheckAndRunForAlreadyLoadedScene()
@@ -60,10 +76,15 @@ namespace tarkin.BSP.Shared
 
                 if (targetObject != null)
                 {
-                    if (destroyInstead)
+                    if (mode == Mode.Destroy)
                         Destroy(targetObject);
                     else
+                    {
+                        if (mode == Mode.DisableTemporary)
+                            originalStates.Add(targetObject, targetObject.activeSelf);
+
                         targetObject.SetActive(false);
+                    }
 
                     successCount++;
                 }
@@ -73,16 +94,7 @@ namespace tarkin.BSP.Shared
                 }
             }
 
-            if (destroyInstead)
-            {
-                Debug.Log($"[{nameof(SceneObjectDisabler)}] Finished processing. Successfully disabled {successCount}/{pathsToDisable.Count} objects.");
-                Destroy(this);
-            }
-            else
-            {
-                Debug.Log($"[{nameof(SceneObjectDisabler)}] Finished processing. Successfully destroyed {successCount}/{pathsToDisable.Count} objects.");
-                this.enabled = false;
-            }
+            Debug.Log($"[{nameof(SceneObjectDisabler)}] Finished processing. Successfully disabled {successCount}/{pathsToDisable.Count} objects.");
         }
 
         // a custom function instead of GameObject.Find()

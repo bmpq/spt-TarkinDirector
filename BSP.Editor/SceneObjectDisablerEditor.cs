@@ -79,7 +79,7 @@ namespace tarkin.BSP.Editor
             EditorGUI.EndDisabledGroup();
 
             EditorGUILayout.PropertyField(serializedDisabler.FindProperty("targetSceneName"));
-            EditorGUILayout.PropertyField(serializedDisabler.FindProperty("destroyInstead"));
+            EditorGUILayout.PropertyField(serializedDisabler.FindProperty("mode"));
 
             EditorGUILayout.Space(10);
 
