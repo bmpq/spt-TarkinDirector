@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Systems.Effects;
 using tarkin.BSP.Bep.Patches;
 using tarkin.BSP.Shared;
 using UnityEngine;
@@ -228,6 +229,11 @@ namespace tarkin.BSP.Bep
 
             var bundleInfo = new LoadedBundleInfo(assetBundle, loadedScene);
             loadedAssetBundles.Add(fullPath, bundleInfo);
+
+            if (Plugin.CleanDecals.Value)
+            {
+                Singleton<Effects>.Instance?.ClearDecal();
+            }
 
             if (!Plugin.Silent.Value)
                 NotificationManagerClass.DisplayMessageNotification($"'{Path.GetFileName(fullPath)}': Scene loaded successfully.");

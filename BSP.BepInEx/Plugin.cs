@@ -28,6 +28,7 @@ namespace tarkin.BSP.Bep
 
         internal static ConfigEntry<string> PrewarmAssemblies;
         internal static ConfigEntry<bool> Silent;
+        internal static ConfigEntry<bool> CleanDecals;
 
         public static string BundleFullPath => Path.Combine(BepInEx.Paths.PluginPath, AddBundlesPathToPluginPath, BundleName.Value);
 
@@ -42,6 +43,8 @@ namespace tarkin.BSP.Bep
 
             new EFTPersistentAudioSourceHandler();
             new SmokeGrenadeMediator();
+            new Patch_TripwireSynchronizableObject_SetupGrenade().Enable();
+            new TripwireMediator();
 
             new Patch_Door_KickOpen().Enable();
             new Patch_WorldInteractiveObject_DoorStateChanged().Enable();
@@ -62,6 +65,7 @@ namespace tarkin.BSP.Bep
             KeybindToggleCameraOverride = Config.Bind("Keybinds", "KeybindToggleCameraOverride", new KeyboardShortcut(KeyCode.PageUp));
 
             Silent = Config.Bind("General", "Silent", false);
+            CleanDecals = Config.Bind("General", "CleanDecalsOnLoad", true);
         }
     }
 }
