@@ -37,5 +37,27 @@ namespace tarkin.BSP.Shared
                 end.SetParent(transform, false);
             }
         }
+
+#if UNITY_EDITOR
+        private void OnDrawGizmos()
+        {
+            if (end == null)
+            {
+                return;
+            }
+
+            Gizmos.color = Color.yellow;
+
+            float height = 0.2f;
+
+            Gizmos.DrawLine(PosFrom, PosFrom + new Vector3(0, height, 0));
+            Gizmos.DrawLine(PosFrom, PosTo);
+            Gizmos.DrawLine(PosFrom + new Vector3(0, height, 0), PosTo + new Vector3(0, height, 0));
+            Gizmos.DrawLine(PosTo, PosTo + new Vector3(0, height, 0));
+            
+            Gizmos.DrawSphere(PosFrom, 0.02f);
+            Gizmos.DrawSphere(PosTo, 0.02f);
+        }
+#endif
     }
 }
