@@ -45,6 +45,7 @@ namespace tarkin.BSP.Bep
             new SmokeGrenadeMediator();
             new Patch_TripwireSynchronizableObject_SetupGrenade().Enable();
             new TripwireMediator();
+            new HurtBoxMediator();
 
             new Patch_Door_KickOpen().Enable();
             new Patch_WorldInteractiveObject_DoorStateChanged().Enable();

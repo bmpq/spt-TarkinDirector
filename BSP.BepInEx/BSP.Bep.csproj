@@ -67,6 +67,7 @@
     <Reference Include="DOTween.Modules">
       <HintPath>$(SPTPath)\EscapeFromTarkov_Data\managed\DOTween.Modules.dll</HintPath>
     </Reference>
+    <Reference Include="$(SPTPath)\EscapeFromTarkov_Data\managed\DissonanceVoip.dll" />
   </ItemGroup>
 
   <Target Name="CopyDllAfterBuild" AfterTargets="Build">
