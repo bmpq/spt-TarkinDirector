@@ -8,7 +8,6 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <SPTPath>E:\Games\SPT_3.11</SPTPath>
     <RootNamespace>tarkin.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
   </PropertyGroup>
 
