@@ -9,6 +9,7 @@ using UnityEngine;
 using tarkin;
 using tarkin.SimpleTransformAnimation.Player;
 using tarkin.SimpleTransformAnimation.Format;
+using tarkin.BSP.Bep.Mediators;
 
 namespace tarkin.BSP.Bep
 {
@@ -41,15 +42,16 @@ namespace tarkin.BSP.Bep
 
             DontDestroyOnLoad(new GameObject("Bundle Scene Player").AddComponent<BundleScenePlayer>().gameObject);
 
+            new MovingPlatformMediator();
             new EFTPersistentAudioSourceHandler();
             new SmokeGrenadeMediator();
-            new Patch_TripwireSynchronizableObject_SetupGrenade().Enable();
             new TripwireMediator();
             new HurtBoxMediator();
             new EffectEmitterMediator();
 
             new Patch_Door_KickOpen().Enable();
             new Patch_WorldInteractiveObject_DoorStateChanged().Enable();
+            new Patch_TripwireSynchronizableObject_SetupGrenade().Enable();
         }
 
         private void InitConfiguration()

@@ -6,12 +6,12 @@ namespace tarkin.BSP.Shared
     [RequireComponent(typeof(Collider))]
     public class MyMovingPlatform : MonoBehaviour
     {
-        public event Action<Collider> ActionOnTriggerEnter;
-        public event Action<Collider> ActionOnTriggerExit;
+        public static event Action<MyMovingPlatform, Collider> ActionOnTriggerEnter;
+        public static event Action<MyMovingPlatform, Collider> ActionOnTriggerExit;
 
-        public event Action<Vector3> ActionLateUpdatePositionDelta;
+        public static event Action<MyMovingPlatform, Vector3> ActionLateUpdatePositionDelta;
 
-        public event Action ActionOnDestroy;
+        public static event Action<MyMovingPlatform> ActionOnDestroy;
 
         Vector3 prevPos;
 
@@ -24,29 +24,24 @@ namespace tarkin.BSP.Shared
 
         void LateUpdate()
         {
-            ActionLateUpdatePositionDelta?.Invoke(transform.position - prevPos);
+            ActionLateUpdatePositionDelta?.Invoke(this, transform.position - prevPos);
 
             prevPos = transform.position;
         }
 
         void OnTriggerEnter(Collider col)
         {
-            ActionOnTriggerEnter?.Invoke(col);
+            ActionOnTriggerEnter?.Invoke(this, col);
         }
 
         void OnTriggerExit(Collider col)
         {
-            ActionOnTriggerExit?.Invoke(col);
+            ActionOnTriggerExit?.Invoke(this, col);
         }
 
-        void OnDestroy()
+        void OnDisable()
         {
-            ActionOnDestroy?.Invoke();
-
-            ActionOnTriggerEnter = null;
-            ActionOnTriggerExit = null;
-            ActionLateUpdatePositionDelta = null;
-            ActionOnDestroy = null;
+            ActionOnDestroy?.Invoke(this);
         }
     }
 }

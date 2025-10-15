@@ -3,10 +3,10 @@ using UnityEngine;
 
 namespace tarkin.BSP.Shared
 {
-    public class SmokeGrenadeImposter : MonoBehaviour
+    public class SmokeGrenade : MonoBehaviour
     {
-        public static event Action<SmokeGrenadeImposter> OnRequestStart;
-        public static event Action<SmokeGrenadeImposter> OnRequestStop;
+        public static event Action<SmokeGrenade> OnRequestStart;
+        public static event Action<SmokeGrenade> OnRequestStop;
 
         public float EmitTime = 90f;
 

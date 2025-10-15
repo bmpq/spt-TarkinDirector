@@ -1,10 +1,7 @@
-﻿using Comfort.Common;
-using EFT;
-using System.Linq;
-using tarkin.BSP.Shared;
+﻿using tarkin.BSP.Shared;
 using UnityEngine;
 
-namespace tarkin.BSP.Bep
+namespace tarkin.BSP.Bep.Mediators
 {
     internal class HurtBoxMediator
     {
@@ -36,6 +33,5 @@ namespace tarkin.BSP.Bep
 
             bodyPart.ApplyHit(dmg, ShotIdStruct.EMPTY_SHOT_ID);
         }
-
     }
 }

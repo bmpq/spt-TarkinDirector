@@ -1,11 +1,13 @@
-﻿using UnityEngine;
-using tarkin.SimpleTransformAnimation.Player;
+﻿using tarkin.SimpleTransformAnimation.Player;
+using UnityEngine;
 
-namespace tarkin.BSP.Shared
+namespace tarkin.BSP.Shared.STA
 {
     [RequireComponent(typeof(STAPlayer))]
-    internal class STATrigger : AnimatorAction
+    internal class STAAudioTrigger : MonoBehaviour
     {
+        public PersistentAudioSource audioSource;
+
         public float triggerTime;
 
         private STAPlayer _staPlayer;
@@ -22,7 +24,7 @@ namespace tarkin.BSP.Shared
 
             if (_previousTime <= triggerTime && currentTime > triggerTime)
             {
-                Invoke();
+                audioSource.Play();
             }
 
             _previousTime = currentTime;

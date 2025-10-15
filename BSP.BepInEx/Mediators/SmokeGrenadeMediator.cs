@@ -5,27 +5,25 @@ using Systems.Effects;
 using tarkin.BSP.Shared;
 using UnityEngine;
 
-namespace tarkin.BSP.Bep
+namespace tarkin.BSP.Bep.Mediators
 {
     internal class SmokeGrenadeMediator
     {
+        private Dictionary<Shared.SmokeGrenade, GrenadeEmission> instances = [];
+
         const string emissionEffect = "weapon_m18_world";
 
         public SmokeGrenadeMediator()
         {
-            instances = new Dictionary<SmokeGrenadeImposter, GrenadeEmission>();
-
-            SmokeGrenadeImposter.OnRequestStart += SmokeGrenadeEmitter_OnRequestStart;
-            SmokeGrenadeImposter.OnRequestStop += SmokeGrenadeEmitter_OnRequestStop;
+            Shared.SmokeGrenade.OnRequestStart += SmokeGrenadeEmitter_OnRequestStart;
+            Shared.SmokeGrenade.OnRequestStop += SmokeGrenadeEmitter_OnRequestStop;
         }
 
-        private Dictionary<SmokeGrenadeImposter, GrenadeEmission> instances;
-
-        private void SmokeGrenadeEmitter_OnRequestStart(SmokeGrenadeImposter requester)
+        private void SmokeGrenadeEmitter_OnRequestStart(Shared.SmokeGrenade requester)
         {
             if (instances.ContainsKey(requester))
             {
-                GameObject.Destroy(instances[requester]);
+                Object.Destroy(instances[requester]);
                 instances.Remove(requester);
             }
 
@@ -42,7 +40,7 @@ namespace tarkin.BSP.Bep
             instances.Add(requester, grenadeEmission);
         }
 
-        private void SmokeGrenadeEmitter_OnRequestStop(SmokeGrenadeImposter requester)
+        private void SmokeGrenadeEmitter_OnRequestStop(Shared.SmokeGrenade requester)
         {
             if (instances.ContainsKey(requester))
             {

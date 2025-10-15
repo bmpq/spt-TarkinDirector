@@ -209,23 +209,9 @@ namespace tarkin.BSP.Bep
                 yield break;
             }
 
-            try
-            {
-                ParseMovingPlatforms(loadedScene);
-
-                animatedCamera = FindSceneCamera(loadedScene);
-                if (animatedCamera != null)
-                {
-                    animatedCamera.enabled = false;
-                }
-            }
-            catch (Exception e)
-            {
-                NotificationManagerClass.DisplayWarningNotification($"Failed to init scene '{sceneName}'");
-                NotificationManagerClass.DisplayWarningNotification($"{e.Message}");
-                assetBundle?.Unload(true);
-                yield break;
-            }
+            animatedCamera = FindSceneCamera(loadedScene);
+            if (animatedCamera != null)
+                animatedCamera.enabled = false;
 
             var bundleInfo = new LoadedBundleInfo(assetBundle, loadedScene);
             loadedAssetBundles.Add(fullPath, bundleInfo);
@@ -252,61 +238,6 @@ namespace tarkin.BSP.Bep
             if (playerCameraController != null)
             {
                 playerCameraController.enabled = on;
-            }
-        }
-
-        // doing this because the shared assembly doesn't depend on game assembly (doesn't know about Player)
-        class MovingPlatformMediator
-        {
-            private readonly List<Player> passengers = [];
-
-            public MovingPlatformMediator(MyMovingPlatform platform)
-            {
-                platform.ActionOnTriggerEnter += OnTriggerEnter;
-                platform.ActionOnTriggerExit += OnTriggerExit;
-                platform.ActionLateUpdatePositionDelta += LateUpdatePositionDelta;
-            }
-
-            void OnTriggerEnter(Collider col)
-            {
-                if (col.gameObject.layer == LayerMaskClass.PlayerLayer && col.gameObject.TryGetComponent<Player>(out Player player))
-                {
-                    if (!passengers.Contains(player))
-                        passengers.Add(player);
-                }
-            }
-
-            void OnTriggerExit(Collider col)
-            {
-                if (col.gameObject.layer == LayerMaskClass.PlayerLayer && col.gameObject.TryGetComponent<Player>(out Player player))
-                {
-                    if (passengers.Contains(player))
-                        passengers.Remove(player);
-                }
-            }
-
-            void LateUpdatePositionDelta(Vector3 delta)
-            {
-                foreach (var passenger in passengers)
-                {
-                    if (passenger != null && passenger.MovementContext != null)
-                        passenger.MovementContext.PlatformMotion = delta;
-                }
-            }
-        }
-
-        HashSet<MovingPlatformMediator> movingPlatforms = [];
-
-        private void ParseMovingPlatforms(Scene scene)
-        {
-            foreach (var rootGameObject in scene.GetRootGameObjects())
-            {
-                foreach (var item in rootGameObject.GetComponentsInChildren<MyMovingPlatform>(true))
-                {
-                    MovingPlatformMediator movingPlatformMediator = new MovingPlatformMediator(item);
-                    movingPlatforms.Add(movingPlatformMediator); 
-                    item.ActionOnDestroy += () => movingPlatforms.Remove(movingPlatformMediator);
-                }
             }
         }
 

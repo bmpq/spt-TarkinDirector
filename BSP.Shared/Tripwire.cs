@@ -3,10 +3,10 @@ using UnityEngine;
 
 namespace tarkin.BSP.Shared
 {
-    public class TripwireImposter : MonoBehaviour
+    public class Tripwire : MonoBehaviour
     {
-        public static event Action<TripwireImposter> OnRequestSpawn;
-        public static event Action<TripwireImposter> OnRequestRemove;
+        public static event Action<Tripwire> OnRequestSpawn;
+        public static event Action<Tripwire> OnRequestRemove;
 
         [SerializeField]
         private Transform end;

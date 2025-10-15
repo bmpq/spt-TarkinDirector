@@ -12,21 +12,23 @@ using tarkin.BSP.Bep.Patches;
 using tarkin.BSP.Shared;
 using UnityEngine;
 
-namespace tarkin.BSP.Bep
+namespace tarkin.BSP.Bep.Mediators
 {
     internal class TripwireMediator
     {
+        private Dictionary<Tripwire, TripwireSynchronizableObject> instances = [];
+
         public TripwireMediator() 
         {
-            TripwireImposter.OnRequestSpawn += TripwireImposter_OnRequestSpawn;
-            TripwireImposter.OnRequestRemove += TripwireImposter_OnRequestRemove;
+            Tripwire.OnRequestSpawn += TripwireImposter_OnRequestSpawn;
+            Tripwire.OnRequestRemove += TripwireImposter_OnRequestRemove;
 
             Patch_TripwireSynchronizableObject_SetupGrenade.OnPostfix += Patch_TripwireSynchronizableObject_SetupGrenade_OnPostfix;
         }
 
         private void Patch_TripwireSynchronizableObject_SetupGrenade_OnPostfix(TripwireSynchronizableObject realTripwire)
         {
-            TripwireImposter imposter = null;
+            Tripwire imposter = null;
             foreach (var kvp in instances)
             {
                 if (ApproximatelyEquals(kvp.Key.PosFrom, realTripwire.FromPosition, 0.001f))
@@ -51,9 +53,7 @@ namespace tarkin.BSP.Bep
                    Mathf.Abs(self.z - other.z) <= epsilon;
         }
 
-        private Dictionary<TripwireImposter, TripwireSynchronizableObject> instances = new Dictionary<TripwireImposter, TripwireSynchronizableObject>();
-
-        private void TripwireImposter_OnRequestSpawn(TripwireImposter imposter)
+        private void TripwireImposter_OnRequestSpawn(Tripwire imposter)
         {
             Item item = Singleton<ItemFactoryClass>.Instance.GetPresetItem(imposter.GrenadeGuid);
             if (item == null)
@@ -63,10 +63,10 @@ namespace tarkin.BSP.Bep
 
             instances.Add(imposter, null);
 
-            Singleton<GInterface142>.Instance.PlantTripwire(item, Singleton<GameWorld>.Instance.MainPlayer.ProfileId, imposter.PosFrom, imposter.PosTo);
+            Singleton<GameWorld>.Instance.PlantTripwire(item, Singleton<GameWorld>.Instance.MainPlayer.ProfileId, imposter.PosFrom, imposter.PosTo);
         }
 
-        private void TripwireImposter_OnRequestRemove(TripwireImposter imposter)
+        private void TripwireImposter_OnRequestRemove(Tripwire imposter)
         {
             if (instances.ContainsKey(imposter))
             {

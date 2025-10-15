@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 using Systems.Effects;
 using tarkin.BSP.Shared;
 
-namespace tarkin.BSP.Bep
+namespace tarkin.BSP.Bep.Mediators
 {
     internal class EffectEmitterMediator
     {
-        public EffectEmitterMediator() {
+        public EffectEmitterMediator() 
+        {
             EffectEmitter.OnRequest += EffectEmitter_OnRequest;
         }
 

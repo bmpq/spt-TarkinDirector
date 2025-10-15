@@ -4,6 +4,11 @@ namespace tarkin.BSP.Shared
 {
     public class SceneSettings : MonoBehaviour
     {
-        public SimulationMode physicsMode;
+        [SerializeField] private SimulationMode physicsMode;
+
+        void OnEnable()
+        {
+            Physics.simulationMode = physicsMode;
+        }
     }
 }

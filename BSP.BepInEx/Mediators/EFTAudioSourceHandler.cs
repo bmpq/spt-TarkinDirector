@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using tarkin.BSP.Shared;
 using UnityEngine;
 
-namespace tarkin.BSP.Bep
+namespace tarkin.BSP.Bep.Mediators
 {
     public class EFTPersistentAudioSourceHandler
     {
-        public BetterAudio.AudioSourceGroupType soundGroup = BetterAudio.AudioSourceGroupType.Environment;
-
-        private Dictionary<PersistentAudioSource, BetterSource> translation = new Dictionary<PersistentAudioSource, BetterSource>();
+        private Dictionary<PersistentAudioSource, BetterSource> instances = new Dictionary<PersistentAudioSource, BetterSource>();
 
         public EFTPersistentAudioSourceHandler()
         {
@@ -19,26 +17,26 @@ namespace tarkin.BSP.Bep
 
         private void HandlePlayRequest(PersistentAudioSource requester, AudioClip clip, bool loop)
         {
-            if (!translation.ContainsKey(requester))
+            if (!instances.ContainsKey(requester))
             {
                 BetterSource source = Singleton<BetterAudio>.Instance.GetSource(BetterAudio.AudioSourceGroupType.Character, true);
                 source.SetMixerGroup(MonoBehaviourSingleton<BetterAudio>.Instance.ObservedPlayerMovementMixer);
-                source.StartTrackingPosition(requester.transform, default(Vector3));
+                source.StartTrackingPosition(requester.transform, default);
                 source.Loop = loop;
 
-                translation[requester] = source;
+                instances[requester] = source;
             }
 
-            translation[requester].Play(clip, null, 1f, 1f, false, false);
+            instances[requester].Play(clip, null, 1f, 1f, false, false);
         }
 
         private void HandleStopRequest(PersistentAudioSource requester)
         {
-            if (!translation.ContainsKey(requester))
+            if (!instances.ContainsKey(requester))
                 return;
 
-            translation[requester].Release();
-            translation.Remove(requester);
+            instances[requester].Release();
+            instances.Remove(requester);
         }
     }
 }
