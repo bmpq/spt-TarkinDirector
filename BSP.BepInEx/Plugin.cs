@@ -2,11 +2,8 @@
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using System.IO;
-using System.Linq;
-using System.Reflection;
 using tarkin.BSP.Bep.Patches;
 using UnityEngine;
-using tarkin;
 using tarkin.SimpleTransformAnimation.Player;
 using tarkin.SimpleTransformAnimation.Format;
 using tarkin.BSP.Bep.Mediators;
@@ -30,10 +27,11 @@ namespace tarkin.BSP.Bep
         internal static ConfigEntry<string> PrewarmAssemblies;
         internal static ConfigEntry<bool> Silent;
         internal static ConfigEntry<bool> CleanDecals;
+        internal static ConfigEntry<bool> MonitorForChanges;
 
         public static string BundleFullPath => Path.Combine(BepInEx.Paths.PluginPath, AddBundlesPathToPluginPath, BundleName.Value);
 
-        private void Awake()
+        private void Start()
         {
             var prewarm = (typeof(BoneMapping), typeof(NodeData));
             InitConfiguration();
@@ -63,6 +61,8 @@ namespace tarkin.BSP.Bep
                 "Prewarming is required when a scene contains serialized references to that assembly, since Unity doesn't load them automatically.");
 
             CameraOverrideHandoverSpeed = Config.Bind("General", "CameraOverrideHandoverSpeed", 2f, "");
+
+            MonitorForChanges = Config.Bind("General", "Monitor for changes", false, "When enabled, the loaded bundle file will be monitored for changes and reloaded automatically.");
 
             KeybindPlayback = Config.Bind("Keybinds", "Keybind Playback", new KeyboardShortcut(KeyCode.Insert));
             KeybindUnloadAll = Config.Bind("Keybinds", "Keybind Unload All", new KeyboardShortcut(KeyCode.Delete));

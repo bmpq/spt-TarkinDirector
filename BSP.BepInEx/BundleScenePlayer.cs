@@ -1,16 +1,12 @@
 ﻿using Comfort.Common;
 using EFT;
 using EFT.CameraControl;
-using EFT.Interactive;
-using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using Systems.Effects;
-using tarkin.BSP.Bep.Patches;
-using tarkin.BSP.Shared;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -30,13 +26,25 @@ namespace tarkin.BSP.Bep
             }
         }
 
-        private Dictionary<string, LoadedBundleInfo> loadedAssetBundles = new Dictionary<string, LoadedBundleInfo>();
+        private readonly Dictionary<string, LoadedBundleInfo> loadedAssetBundles = new Dictionary<string, LoadedBundleInfo>();
+        private readonly ConcurrentQueue<string> changedFilesQueue = new ConcurrentQueue<string>();
+        private FileSystemWatcher fileWatcher;
 
         Coroutine operation;
 
         Camera animatedCamera;
         float cameraOverrideFactor;
         bool cameraOverride;
+
+        void Start()
+        {
+            SetupFileWatcher();
+        }
+
+        void OnDestroy()
+        {
+            fileWatcher?.Dispose();
+        }
 
         void Update()
         {
@@ -65,6 +73,8 @@ namespace tarkin.BSP.Bep
                 }
             }
 
+            ProcessChangedFilesQueue();
+
             if (Input.GetKeyDown(Plugin.KeybindToggleCameraOverride.Value.MainKey))
             {
                 cameraOverrideFactor = 0;
@@ -86,6 +96,56 @@ namespace tarkin.BSP.Bep
                 }
 
                 TransformGameCameraToBundleCamera(cameraOverrideFactor);
+            }
+        }
+
+        private void SetupFileWatcher()
+        {
+            string bundleDirectoryPath = Path.GetDirectoryName(Plugin.BundleFullPath);
+
+            if (!Directory.Exists(bundleDirectoryPath))
+            {
+                Plugin.Log.LogWarning($"Cannot monitor bundle directory as it does not exist: {bundleDirectoryPath}");
+                return;
+            }
+
+            fileWatcher = new FileSystemWatcher(bundleDirectoryPath)
+            {
+                NotifyFilter = NotifyFilters.LastWrite
+            };
+
+            fileWatcher.Changed += OnFileChanged;
+            fileWatcher.Created += OnFileChanged;
+
+            fileWatcher.EnableRaisingEvents = true;
+            Plugin.Log.LogInfo($"File watcher active for: {bundleDirectoryPath}");
+        }
+
+        private void OnFileChanged(object sender, FileSystemEventArgs e)
+        {
+            if (!Plugin.MonitorForChanges.Value)
+                return;
+
+            if (loadedAssetBundles.ContainsKey(e.FullPath))
+            {
+                changedFilesQueue.Enqueue(e.FullPath);
+            }
+        }
+
+        private void ProcessChangedFilesQueue()
+        {
+            if (operation != null) return;
+
+            if (changedFilesQueue.TryDequeue(out string fullPath))
+            {
+                if (loadedAssetBundles.ContainsKey(fullPath))
+                {
+                    if (!Plugin.Silent.Value)
+                    {
+                        NotificationManagerClass.DisplayMessageNotification($"File change detected. Reloading '{Path.GetFileName(fullPath)}'...");
+                    }
+                    operation = StartCoroutine(ReloadBundle(fullPath));
+                }
             }
         }
 
