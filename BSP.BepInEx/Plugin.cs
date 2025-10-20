@@ -46,6 +46,7 @@ namespace tarkin.BSP.Bep
             new TripwireMediator();
             new HurtBoxMediator();
             new EffectEmitterMediator();
+            new SpawnPointMediator();
 
             new Patch_Door_KickOpen().Enable();
             new Patch_WorldInteractiveObject_DoorStateChanged().Enable();
