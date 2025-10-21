@@ -51,6 +51,9 @@ namespace tarkin.BSP.Bep
             new Patch_Door_KickOpen().Enable();
             new Patch_WorldInteractiveObject_DoorStateChanged().Enable();
             new Patch_TripwireSynchronizableObject_SetupGrenade().Enable();
+
+            new Patch_AudioRoomTracker_RegisterAllRooms().Enable();
+            new Patch_SpatialAudioCrossSceneGroup_OnDestroy().Enable();
         }
 
         private void InitConfiguration()
