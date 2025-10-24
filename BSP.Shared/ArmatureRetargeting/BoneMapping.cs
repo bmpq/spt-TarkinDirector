@@ -11,10 +11,22 @@ namespace tarkin.BSP.Shared.ArmatureRetargeting
         public bool overrideRotation;
         public Vector3 offsetRot;
 
-        public bool overrideLocation;
+        public bool overrideLocation; 
+        
+        [SensitiveVector(0.001f)]
         public Vector3 offsetLoc;
 
         public bool overrideScale;
         public Vector3 absoluteScl = Vector3.one;
+    }
+}
+
+public class SensitiveVectorAttribute : PropertyAttribute
+{
+    public readonly float dragSensitivity;
+
+    public SensitiveVectorAttribute(float dragSensitivity = 0.001f)
+    {
+        this.dragSensitivity = dragSensitivity;
     }
 }
