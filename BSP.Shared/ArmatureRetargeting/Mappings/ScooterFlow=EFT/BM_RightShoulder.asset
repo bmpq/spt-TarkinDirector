@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   boneSource: RightShoulder
   boneTarget: Base HumanRCollarbone
-  overrideRotation: 0
-  offsetRot: {x: 0, y: 0, z: 0}
-  overrideLocation: 0
-  offsetLoc: {x: 0, y: 0, z: 0}
+  overrideRotation: 1
+  offsetRot: {x: 18.67, y: -145.8, z: -87.8}
+  overrideLocation: 1
+  offsetLoc: {x: -0.028799996, y: 0.01599999, z: -0.021599991}
   overrideScale: 0
   absoluteScl: {x: 1, y: 1, z: 1}

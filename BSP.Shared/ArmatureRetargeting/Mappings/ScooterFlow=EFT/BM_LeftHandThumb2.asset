@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   boneSource: LeftHandThumb2
   boneTarget: Base HumanLDigit12
-  overrideRotation: 0
-  offsetRot: {x: 0, y: 0, z: 0}
+  overrideRotation: 1
+  offsetRot: {x: 180, y: -149.8, z: 90}
   overrideLocation: 0
   offsetLoc: {x: 0, y: 0, z: 0}
   overrideScale: 0

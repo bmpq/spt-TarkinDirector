@@ -15,8 +15,8 @@ MonoBehaviour:
   boneSource: Spine1
   boneTarget: Base HumanSpine2
   overrideRotation: 1
-  offsetRot: {x: 1.5, y: -84.88, z: -72.46}
+  offsetRot: {x: 0, y: -90, z: -80.7}
   overrideLocation: 1
-  offsetLoc: {x: 0, y: 0.05, z: -0.24}
+  offsetLoc: {x: 0, y: -0.09506988, z: -0.048000015}
   overrideScale: 0
   absoluteScl: {x: 1, y: 1, z: 1}

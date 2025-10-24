@@ -31,6 +31,10 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ArmatureRetargeting\" />
+  </ItemGroup>
+
   <Target Name="CopyDllAfterBuild" AfterTargets="Build">
     <Copy SourceFiles="$(OutputPath)$(AssemblyName).dll" DestinationFolder="$(SPTPath)\BepInEx\plugins\tarkin" />
   </Target>

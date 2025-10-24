@@ -36,7 +36,9 @@ namespace tarkin.BSP.Shared.ArmatureRetargeting
 
                 destBone.transform.position = sourceBone.TransformPoint(boneData.LocationOffset + GlobalLocationOffset);
                 destBone.rotation = sourceBone.rotation * Quaternion.Euler(boneData.RotationOffset + GlobalRotationOffset);
-                SetWorldScale(destBone, boneData.AbsoluteScale);
+                Vector3 scl = sourceBone.localScale;
+                scl.Scale(boneData.LocalScale);
+                destBone.localScale = scl;
             }
         }
 

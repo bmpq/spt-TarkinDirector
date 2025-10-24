@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   boneSource: Spine
   boneTarget: Base HumanSpine1
-  overrideRotation: 0
-  offsetRot: {x: -192.47, y: 0, z: 0}
+  overrideRotation: 1
+  offsetRot: {x: -180, y: 90, z: 110.4}
   overrideLocation: 1
-  offsetLoc: {x: 0, y: -0.2, z: 0.18}
+  offsetLoc: {x: 0, y: -0.1912, z: 0.008800026}
   overrideScale: 0
   absoluteScl: {x: 1, y: 1, z: 1}

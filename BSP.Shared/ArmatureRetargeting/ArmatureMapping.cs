@@ -9,7 +9,7 @@ namespace tarkin.BSP.Shared.ArmatureRetargeting
         public string TargetBoneName;
         public Vector3 RotationOffset;
         public Vector3 LocationOffset;
-        public Vector3 AbsoluteScale;
+        public Vector3 LocalScale;
     }
 
     [CreateAssetMenu(fileName = "Map_", menuName = "ScriptableObjects/Armature Mapping")]
@@ -17,7 +17,7 @@ namespace tarkin.BSP.Shared.ArmatureRetargeting
     {
         public Vector3 defaultOffsetRot = new Vector3(0, 0, 90);
         public Vector3 defaultOffsetLoc = Vector3.zero;
-        public Vector3 defaultAbsoluteScl = Vector3.one;
+        public Vector3 defaultLocalScl = Vector3.one;
 
         public List<BoneMapping> boneMappings;
 
@@ -70,7 +70,7 @@ namespace tarkin.BSP.Shared.ArmatureRetargeting
                 TargetBoneName = mapping.boneTarget,
                 RotationOffset = mapping.overrideRotation ? mapping.offsetRot : this.defaultOffsetRot,
                 LocationOffset = mapping.overrideLocation ? mapping.offsetLoc : this.defaultOffsetLoc,
-                AbsoluteScale = mapping.overrideScale ? mapping.absoluteScl : this.defaultAbsoluteScl
+                LocalScale = mapping.overrideScale ? mapping.absoluteScl : this.defaultLocalScl
             };
         }
     }

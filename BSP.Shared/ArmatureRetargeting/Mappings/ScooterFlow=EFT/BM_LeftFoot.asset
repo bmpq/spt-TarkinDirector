@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   boneSource: LeftFoot
   boneTarget: Base HumanLFoot
-  overrideRotation: 0
-  offsetRot: {x: 0, y: 0, z: 0}
-  overrideLocation: 0
-  offsetLoc: {x: 0, y: 0, z: 0}
+  overrideRotation: 1
+  offsetRot: {x: 4.7, y: -90, z: -103.7}
+  overrideLocation: 1
+  offsetLoc: {x: 0, y: 0.012800015, z: -0.04360001}
   overrideScale: 0
   absoluteScl: {x: 1, y: 1, z: 1}

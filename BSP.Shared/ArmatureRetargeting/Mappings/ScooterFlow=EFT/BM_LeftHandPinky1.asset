@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   boneSource: LeftHandPinky1
   boneTarget: Base HumanLDigit51
-  overrideRotation: 0
-  offsetRot: {x: 0, y: 0, z: 0}
-  overrideLocation: 0
-  offsetLoc: {x: 0, y: 0, z: 0}
+  overrideRotation: 1
+  offsetRot: {x: 180, y: -90, z: 90}
+  overrideLocation: 1
+  offsetLoc: {x: 0, y: -0.02480002, z: 0}
   overrideScale: 0
   absoluteScl: {x: 1, y: 1, z: 1}

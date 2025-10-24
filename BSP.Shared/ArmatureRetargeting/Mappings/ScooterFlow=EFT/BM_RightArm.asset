@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   boneSource: RightArm
   boneTarget: Base HumanRUpperarm
-  overrideRotation: 0
-  offsetRot: {x: 0, y: 0, z: 0}
-  overrideLocation: 0
-  offsetLoc: {x: 0, y: 0, z: 0}
+  overrideRotation: 1
+  offsetRot: {x: 13.93, y: 197.8, z: -101.8}
+  overrideLocation: 1
+  offsetLoc: {x: 0.014400029, y: -0.06880007, z: 0.005599988}
   overrideScale: 0
   absoluteScl: {x: 1, y: 1, z: 1}

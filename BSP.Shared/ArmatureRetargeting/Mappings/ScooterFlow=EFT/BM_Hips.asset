@@ -15,8 +15,8 @@ MonoBehaviour:
   boneSource: Hips
   boneTarget: Base HumanPelvis
   overrideRotation: 1
-  offsetRot: {x: 0, y: -90, z: 233.1}
+  offsetRot: {x: 0, y: -90, z: 186.5}
   overrideLocation: 1
-  offsetLoc: {x: 0, y: 0, z: -0.14}
+  offsetLoc: {x: 0, y: -0.016800059, z: -0.029599948}
   overrideScale: 0
   absoluteScl: {x: 1, y: 1, z: 1}

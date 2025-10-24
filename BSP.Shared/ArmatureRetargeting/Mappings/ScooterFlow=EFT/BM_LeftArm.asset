@@ -15,8 +15,8 @@ MonoBehaviour:
   boneSource: LeftArm
   boneTarget: Base HumanLUpperarm
   overrideRotation: 1
-  offsetRot: {x: 0, y: 90, z: -90}
-  overrideLocation: 0
-  offsetLoc: {x: 0, y: 0, z: 0}
+  offsetRot: {x: 0, y: -27.3, z: -90.45}
+  overrideLocation: 1
+  offsetLoc: {x: 0.020799978, y: -0.08479996, z: 9.147456e-10}
   overrideScale: 0
   absoluteScl: {x: 1, y: 1, z: 1}

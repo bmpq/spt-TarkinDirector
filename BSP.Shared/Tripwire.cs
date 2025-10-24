@@ -1,4 +1,8 @@
-﻿using System;
+﻿#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
+using System;
 using UnityEngine;
 
 namespace tarkin.BSP.Shared
@@ -39,6 +43,7 @@ namespace tarkin.BSP.Shared
         }
 
 #if UNITY_EDITOR
+        [DrawGizmo(GizmoType.Pickable | GizmoType.NonSelected)]
         private void OnDrawGizmos()
         {
             if (end == null)
@@ -51,7 +56,8 @@ namespace tarkin.BSP.Shared
             float height = 0.2f;
 
             Gizmos.DrawLine(PosFrom, PosFrom + new Vector3(0, height, 0));
-            Gizmos.DrawLine(PosFrom, PosTo);
+            Handles.zTest = UnityEngine.Rendering.CompareFunction.LessEqual;
+            Handles.DrawDottedLine(PosFrom, PosTo, 1f);
             Gizmos.DrawLine(PosFrom + new Vector3(0, height, 0), PosTo + new Vector3(0, height, 0));
             Gizmos.DrawLine(PosTo, PosTo + new Vector3(0, height, 0));
             

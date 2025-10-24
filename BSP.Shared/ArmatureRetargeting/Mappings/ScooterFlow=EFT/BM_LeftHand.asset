@@ -15,7 +15,7 @@ MonoBehaviour:
   boneSource: LeftHand
   boneTarget: Base HumanLPalm
   overrideRotation: 1
-  offsetRot: {x: 0, y: 90, z: -90}
+  offsetRot: {x: 3.5, y: 84.7, z: -92.88}
   overrideLocation: 0
   offsetLoc: {x: 0, y: 0, z: 0}
   overrideScale: 0
