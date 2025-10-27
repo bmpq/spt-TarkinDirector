@@ -37,7 +37,10 @@ namespace tarkin.BSP.Shared
             {
                 foreach (var kvp in originalStates)
                 {
-                    kvp.Key.SetActive(kvp.Value);
+                    if (kvp.Key != null)
+                    {
+                        kvp.Key.SetActive(kvp.Value);
+                    }
                 }
             }
         }
@@ -51,7 +54,7 @@ namespace tarkin.BSP.Shared
             }
         }
 
-        private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        private void OnSceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
         {
             if (scene.name == targetSceneName)
             {
@@ -68,40 +71,51 @@ namespace tarkin.BSP.Shared
                 yield return new WaitForSecondsRealtime(delay);
 
             Debug.Log($"[{nameof(SceneObjectDisabler)}] Processing {pathsToDisable.Count} paths...");
-            int successCount = 0;
+            int processedPathCount = 0;
+            int totalObjectsAffected = 0;
 
             foreach (string path in pathsToDisable)
             {
-                GameObject targetObject = FindObjectByPath(path);
+                List<GameObject> targetObjects = FindObjectsByPath(path);
 
-                if (targetObject != null)
+                if (targetObjects.Count > 0)
                 {
-                    if (mode == Mode.Destroy)
-                        Destroy(targetObject);
-                    else
+                    processedPathCount++;
+                    foreach (GameObject targetObject in targetObjects)
                     {
-                        if (mode == Mode.DisableTemporary)
-                            originalStates.Add(targetObject, targetObject.activeSelf);
-
-                        targetObject.SetActive(false);
+                        if (targetObject != null)
+                        {
+                            switch (mode)
+                            {
+                                case Mode.Destroy:
+                                    Destroy(targetObject);
+                                    break;
+                                case Mode.DisableTemporary:
+                                    if (!originalStates.ContainsKey(targetObject))
+                                        originalStates.Add(targetObject, targetObject.activeSelf);
+                                    targetObject.SetActive(false);
+                                    break;
+                                case Mode.DisablePermanent:
+                                    targetObject.SetActive(false);
+                                    break;
+                            }
+                            totalObjectsAffected++;
+                        }
                     }
-
-                    successCount++;
                 }
                 else
                 {
-                    Debug.LogWarning($"[{nameof(SceneObjectDisabler)}] Could not find object at path: {path}");
+                    Debug.LogWarning($"[{nameof(SceneObjectDisabler)}] Could not find any objects at path: {path}");
                 }
             }
 
-            Debug.Log($"[{nameof(SceneObjectDisabler)}] Finished processing. Successfully disabled {successCount}/{pathsToDisable.Count} objects.");
+            Debug.Log($"[{nameof(SceneObjectDisabler)}] Finished processing. Successfully processed {processedPathCount}/{pathsToDisable.Count} paths, affecting a total of {totalObjectsAffected} objects.");
         }
 
-        // a custom function instead of GameObject.Find()
-        // for more control and to include inactive root objects in the search
-        public static GameObject FindObjectByPath(string path)
+        public static List<GameObject> FindObjectsByPath(string path)
         {
-            if (string.IsNullOrEmpty(path)) return null;
+            var foundObjects = new List<GameObject>();
+            if (string.IsNullOrEmpty(path)) return foundObjects;
 
             // Standardize the path by removing a leading slash if it exists, just to be safe
             if (path.StartsWith("/"))
@@ -109,42 +123,55 @@ namespace tarkin.BSP.Shared
 
             string[] names = path.Split('/');
 
-            GameObject root = null;
+            var rootObjects = new List<GameObject>();
             for (int i = 0; i < SceneManager.sceneCount; i++)
             {
                 Scene scene = SceneManager.GetSceneAt(i);
-                if (!scene.isLoaded)
-                    continue;
+                if (!scene.isLoaded) continue;
 
                 foreach (var go in scene.GetRootGameObjects())
                 {
                     if (go.name == names[0])
                     {
-                        root = go;
-                        break;
+                        rootObjects.Add(go);
                     }
                 }
-                if (root != null) break;
             }
-
-            if (root == null)
-                return null;
 
             if (names.Length == 1)
-                return root;
-
-            Transform currentTransform = root.transform;
-            for (int i = 1; i < names.Length; i++)
             {
-                Transform child = currentTransform.Find(names[i]);
-                if (child == null)
-                {
-                    return null;
-                }
-                currentTransform = child;
+                return rootObjects;
             }
 
-            return currentTransform.gameObject;
+            foreach (var root in rootObjects)
+            {
+                FindChildrenRecursive(root.transform, names, 1, foundObjects);
+            }
+
+            return foundObjects;
+        }
+
+        private static void FindChildrenRecursive(Transform currentParent, string[] names, int index, List<GameObject> foundObjects)
+        {
+            if (index >= names.Length) return;
+
+            string targetName = names[index];
+
+            for (int i = 0; i < currentParent.childCount; i++)
+            {
+                Transform child = currentParent.GetChild(i);
+                if (child.name == targetName)
+                {
+                    if (index == names.Length - 1)
+                    {
+                        foundObjects.Add(child.gameObject);
+                    }
+                    else
+                    {
+                        FindChildrenRecursive(child, names, index + 1, foundObjects);
+                    }
+                }
+            }
         }
     }
 }

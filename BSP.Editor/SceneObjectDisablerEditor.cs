@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
+using System.Collections.Generic;
 using System.Linq;
 using tarkin.BSP.Shared;
 
@@ -13,7 +14,9 @@ namespace tarkin.BSP.Editor
         private SerializedProperty pathsToDisableProp;
 
         private Vector2 scrollPosition;
-        private int hiddenCount = 0;
+
+        private int hiddenObjectCount = 0;
+        private int totalObjectCount = 0;
 
         [MenuItem("Tools/Scene Object Disabler")]
         public static void ShowWindow()
@@ -80,14 +83,16 @@ namespace tarkin.BSP.Editor
 
             EditorGUILayout.PropertyField(serializedDisabler.FindProperty("targetSceneName"));
             EditorGUILayout.PropertyField(serializedDisabler.FindProperty("mode"));
+            EditorGUILayout.PropertyField(serializedDisabler.FindProperty("delay"));
+
 
             EditorGUILayout.Space(10);
 
             EditorGUILayout.LabelField("Scene Visibility Sync", EditorStyles.boldLabel);
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 
-            int totalCount = pathsToDisableProp.arraySize;
-            EditorGUILayout.LabelField($"Status: {hiddenCount} / {totalCount} objects hidden.");
+            int pathCount = pathsToDisableProp.arraySize;
+            EditorGUILayout.LabelField($"Status: {hiddenObjectCount} / {totalObjectCount} objects from {pathCount} paths are hidden.");
 
             EditorGUILayout.BeginHorizontal();
             GUI.backgroundColor = new Color(1f, 0.7f, 0.7f);
@@ -103,7 +108,6 @@ namespace tarkin.BSP.Editor
             GUI.backgroundColor = Color.white;
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.EndVertical();
-
 
             EditorGUILayout.Space(10);
 
@@ -131,14 +135,18 @@ namespace tarkin.BSP.Editor
 
                 if (GUILayout.Button("Ping", GUILayout.Width(50)))
                 {
-                    GameObject obj = SceneObjectDisabler.FindObjectByPath(pathProp.stringValue);
-                    if (obj != null)
+                    List<GameObject> objects = SceneObjectDisabler.FindObjectsByPath(pathProp.stringValue);
+                    if (objects.Count > 0)
                     {
-                        if (SceneVisibilityManager.instance.IsHidden(obj))
+                        foreach (var obj in objects)
                         {
-                            SceneVisibilityManager.instance.Show(obj, true);
+                            if (SceneVisibilityManager.instance.IsHidden(obj))
+                            {
+                                SceneVisibilityManager.instance.Show(obj, true);
+                            }
+                            EditorGUIUtility.PingObject(obj);
                         }
-                        EditorGUIUtility.PingObject(obj);
+                        Selection.objects = objects.ToArray();
                     }
                 }
 
@@ -153,10 +161,13 @@ namespace tarkin.BSP.Editor
             if (indexToRemove != -1)
             {
                 string pathToRemove = pathsToDisableProp.GetArrayElementAtIndex(indexToRemove).stringValue;
-                GameObject obj = SceneObjectDisabler.FindObjectByPath(pathToRemove);
-                if (obj != null)
+                List<GameObject> objects = SceneObjectDisabler.FindObjectsByPath(pathToRemove);
+                foreach (var obj in objects)
                 {
-                    SceneVisibilityManager.instance.Show(obj, true);
+                    if (obj != null)
+                    {
+                        SceneVisibilityManager.instance.Show(obj, true);
+                    }
                 }
                 pathsToDisableProp.DeleteArrayElementAtIndex(indexToRemove);
             }
@@ -178,16 +189,19 @@ namespace tarkin.BSP.Editor
             for (int i = 0; i < pathsToDisableProp.arraySize; i++)
             {
                 string path = pathsToDisableProp.GetArrayElementAtIndex(i).stringValue;
-                GameObject obj = SceneObjectDisabler.FindObjectByPath(path);
-                if (obj != null)
+                List<GameObject> objects = SceneObjectDisabler.FindObjectsByPath(path);
+                foreach (var obj in objects)
                 {
-                    if (hide)
+                    if (obj != null)
                     {
-                        SceneVisibilityManager.instance.Hide(obj, true);
-                    }
-                    else
-                    {
-                        SceneVisibilityManager.instance.Show(obj, true);
+                        if (hide)
+                        {
+                            SceneVisibilityManager.instance.Hide(obj, true);
+                        }
+                        else
+                        {
+                            SceneVisibilityManager.instance.Show(obj, true);
+                        }
                     }
                 }
             }
@@ -198,21 +212,28 @@ namespace tarkin.BSP.Editor
         {
             if (disablerInstance == null || pathsToDisableProp == null)
             {
-                hiddenCount = 0;
+                hiddenObjectCount = 0;
+                totalObjectCount = 0;
                 return;
             }
 
-            int count = 0;
+            int hidden = 0;
+            int total = 0;
             for (int i = 0; i < pathsToDisableProp.arraySize; i++)
             {
                 string path = pathsToDisableProp.GetArrayElementAtIndex(i).stringValue;
-                GameObject obj = SceneObjectDisabler.FindObjectByPath(path);
-                if (obj != null && SceneVisibilityManager.instance.IsHidden(obj))
+                List<GameObject> objects = SceneObjectDisabler.FindObjectsByPath(path);
+                total += objects.Count;
+                foreach (var obj in objects)
                 {
-                    count++;
+                    if (obj != null && SceneVisibilityManager.instance.IsHidden(obj))
+                    {
+                        hidden++;
+                    }
                 }
             }
-            hiddenCount = count;
+            hiddenObjectCount = hidden;
+            totalObjectCount = total;
             Repaint();
         }
 
@@ -239,6 +260,7 @@ namespace tarkin.BSP.Editor
                 EditorSceneManager.MarkSceneDirty(disablerInstance.gameObject.scene);
             }
 
+            serializedDisabler.ApplyModifiedProperties();
             SyncVisibility(true);
         }
 
@@ -254,7 +276,8 @@ namespace tarkin.BSP.Editor
         private string GenerateHierarchyPath(GameObject obj)
         {
             if (obj == null) return string.Empty;
-            return string.Join("/", obj.GetComponentsInParent<Transform>().Reverse().Select(t => t.name));
+            string path = string.Join("/", obj.GetComponentsInParent<Transform>(true).Reverse().Select(t => t.name));
+            return path;
         }
     }
 }
