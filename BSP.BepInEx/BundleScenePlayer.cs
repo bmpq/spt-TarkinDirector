@@ -33,12 +33,16 @@ namespace tarkin.BSP.Bep
 
         Coroutine operation;
 
-        Camera animatedCamera;
+        List<Camera> cameraProxies = new List<Camera>();
         float cameraOverrideFactor;
         bool cameraOverride;
+        RenderTexture dummyRenderTexture;
 
         void Start()
         {
+            dummyRenderTexture = new RenderTexture(1, 1, 16);
+            dummyRenderTexture.Create();
+
             SetupFileWatcher();
         }
 
@@ -81,13 +85,13 @@ namespace tarkin.BSP.Bep
                 cameraOverrideFactor = 0;
 
                 cameraOverride = !cameraOverride;
-                if (animatedCamera == null)
+                if (cameraProxies.Count == 0)
                     cameraOverride = false;
 
                 TogglePlayerCameraController(!cameraOverride);
             }
 
-            if (cameraOverride && animatedCamera != null && CameraClass.Instance.Camera != null)
+            if (cameraOverride && cameraProxies.Count > 0 && CameraClass.Instance.Camera != null)
             {
                 if (cameraOverrideFactor < 1f)
                 {
@@ -152,9 +156,22 @@ namespace tarkin.BSP.Bep
 
         void TransformGameCameraToBundleCamera(float t)
         {
-            CameraClass.Instance.Camera.transform.position = Vector3.Lerp(CameraClass.Instance.Camera.transform.position, animatedCamera.transform.position, t);
-            CameraClass.Instance.Camera.transform.rotation = Quaternion.Lerp(CameraClass.Instance.Camera.transform.rotation, animatedCamera.transform.rotation, t);
-            CameraClass.Instance.Camera.fieldOfView = Mathf.Lerp(CameraClass.Instance.Camera.fieldOfView, animatedCamera.fieldOfView, t);
+            Camera activeProxyCamera = cameraProxies[0];
+
+            foreach (var proxyCam in cameraProxies)
+            {
+                if (proxyCam.isActiveAndEnabled)
+                {
+                    activeProxyCamera = proxyCam;
+                }
+            }
+
+            if (activeProxyCamera == null)
+                return;
+
+            CameraClass.Instance.Camera.transform.position = Vector3.Lerp(CameraClass.Instance.Camera.transform.position, activeProxyCamera.transform.position, t);
+            CameraClass.Instance.Camera.transform.rotation = Quaternion.Lerp(CameraClass.Instance.Camera.transform.rotation, activeProxyCamera.transform.rotation, t);
+            CameraClass.Instance.Camera.fieldOfView = Mathf.Lerp(CameraClass.Instance.Camera.fieldOfView, activeProxyCamera.fieldOfView, t);
         }
 
         IEnumerator UnloadAllBundlesRoutine()
@@ -201,11 +218,8 @@ namespace tarkin.BSP.Bep
 
             if (!Plugin.Silent.Value)
                 NotificationManagerClass.DisplayMessageNotification($"Unloading '{Path.GetFileName(fullPath)}'...");
-            
-            if (animatedCamera != null)
-            {
-                animatedCamera = null;
-            }
+
+            cameraProxies.Clear();
 
             if (info.Scene.isLoaded)
             {
@@ -270,9 +284,7 @@ namespace tarkin.BSP.Bep
                 yield break;
             }
 
-            animatedCamera = FindSceneCamera(loadedScene);
-            if (animatedCamera != null)
-                animatedCamera.enabled = false;
+            cameraProxies = FindSceneCameras(loadedScene);
 
             var bundleInfo = new LoadedBundleInfo(assetBundle, loadedScene);
             loadedAssetBundles.Add(fullPath, bundleInfo);
@@ -302,16 +314,21 @@ namespace tarkin.BSP.Bep
             }
         }
 
-        Camera FindSceneCamera(Scene scene)
+        List<Camera> FindSceneCameras(Scene scene)
         {
+            List<Camera> cameraProxies = new List<Camera>();
             foreach (GameObject rootGameObject in scene.GetRootGameObjects())
             {
-                Camera sceneCamera = rootGameObject.GetComponentInChildren<Camera>();
-                if (sceneCamera != null)
-                    return sceneCamera;
+                cameraProxies.AddRange(rootGameObject.GetComponentsInChildren<Camera>());
             }
 
-            return null;
+            foreach (Camera cam in cameraProxies)
+            {
+                cam.cullingMask = 0;
+                cam.targetTexture = dummyRenderTexture;
+            }
+
+            return cameraProxies;
         }
     }
 }
