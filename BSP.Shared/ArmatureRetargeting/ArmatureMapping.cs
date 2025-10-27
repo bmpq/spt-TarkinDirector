@@ -73,5 +73,17 @@ namespace tarkin.BSP.Shared.ArmatureRetargeting
                 LocalScale = mapping.overrideScale ? mapping.absoluteScl : this.defaultLocalScl
             };
         }
+
+        public static ResolvedBoneData GetPassThroughMapping(string sourceBoneName)
+        {
+            return new ResolvedBoneData
+            {
+                IsMapped = true,
+                TargetBoneName = sourceBoneName,
+                RotationOffset = Vector3.zero,
+                LocationOffset = Vector3.zero,
+                LocalScale = Vector3.one
+            };
+        }
     }
 }

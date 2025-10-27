@@ -16,16 +16,20 @@ namespace tarkin.BSP.Shared.ArmatureRetargeting
         public Vector3 GlobalRotationOffset;
         public Vector3 GlobalLocationOffset;
 
-        void Update()
+        private void Update()
         {
-            if (destinationArmatureRoot == null || mapping == null)
+            if (destinationArmatureRoot == null)
                 return;
 
             var allDestBones = destinationArmatureRoot.GetComponentsInChildren<Transform>();
 
             foreach (Transform sourceBone in sourceArmatureRoot.GetComponentsInChildren<Transform>())
             {
-                ResolvedBoneData boneData = mapping.GetResolvedBoneData(sourceBone.name);
+                ResolvedBoneData boneData;
+                if (mapping == null)
+                    boneData = ArmatureMapping.GetPassThroughMapping(sourceBone.name);
+                else
+                    boneData = mapping.GetResolvedBoneData(sourceBone.name);
                 if (!boneData.IsMapped)
                     continue;
 
