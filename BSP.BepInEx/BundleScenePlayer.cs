@@ -319,7 +319,7 @@ namespace tarkin.BSP.Bep
             List<Camera> cameraProxies = new List<Camera>();
             foreach (GameObject rootGameObject in scene.GetRootGameObjects())
             {
-                cameraProxies.AddRange(rootGameObject.GetComponentsInChildren<Camera>());
+                cameraProxies.AddRange(rootGameObject.GetComponentsInChildren<Camera>(true));
             }
 
             foreach (Camera cam in cameraProxies)
