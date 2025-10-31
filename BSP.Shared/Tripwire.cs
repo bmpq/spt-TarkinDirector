@@ -60,9 +60,21 @@ namespace tarkin.BSP.Shared
             Handles.DrawDottedLine(PosFrom, PosTo, 1f);
             Gizmos.DrawLine(PosFrom + new Vector3(0, height, 0), PosTo + new Vector3(0, height, 0));
             Gizmos.DrawLine(PosTo, PosTo + new Vector3(0, height, 0));
-            
-            Gizmos.DrawSphere(PosFrom, 0.02f);
-            Gizmos.DrawSphere(PosTo, 0.02f);
+
+            float crossSize = 0.05f;
+
+            Gizmos.DrawLine(PosFrom - new Vector3(crossSize / 2f, 0, 0), PosFrom + new Vector3(crossSize / 2f, 0, 0));
+            Gizmos.DrawLine(PosFrom - new Vector3(0, 0, crossSize / 2f), PosFrom + new Vector3(0, 0, crossSize / 2f));
+
+            Gizmos.DrawLine(PosTo - new Vector3(crossSize / 2f, 0, 0), PosTo + new Vector3(crossSize / 2f, 0, 0));
+            Gizmos.DrawLine(PosTo - new Vector3(0, 0, crossSize / 2f), PosTo + new Vector3(0, 0, crossSize / 2f));
+
+            Gizmos.DrawWireSphere(PosFrom, 0.02f);
+            Gizmos.DrawWireSphere(PosTo, 0.02f);
+
+            Vector3 dirTo = (PosTo - PosFrom).normalized;
+            Vector3 grenadePos = PosFrom + new Vector3(0, height -0.05f, 0) + -dirTo * 0.05f;
+            Gizmos.DrawSphere(grenadePos, 0.04f);
         }
 #endif
     }
