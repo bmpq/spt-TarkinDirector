@@ -241,6 +241,8 @@ namespace tarkin.BSP.Bep
 
             info.Bundle.Unload(true);
             loadedAssetBundles.Remove(fullPath);
+
+            Resources.UnloadUnusedAssets();
         }
 
         IEnumerator LoadBundleRoutine(string fullPath)
@@ -292,6 +294,8 @@ namespace tarkin.BSP.Bep
             var bundleInfo = new LoadedBundleInfo(assetBundle, loadedScene);
             loadedAssetBundles.Add(fullPath, bundleInfo);
 
+            ReplaceShadersToNative(loadedScene);
+
             if (Plugin.CleanDecals.Value)
             {
                 Singleton<Effects>.Instance?.ClearDecal();
@@ -333,6 +337,25 @@ namespace tarkin.BSP.Bep
             }
 
             return cameraProxies;
+        }
+
+        void ReplaceShadersToNative(Scene scene)
+        {
+            foreach (GameObject rootGameObject in scene.GetRootGameObjects())
+            {
+                foreach (Renderer rend in rootGameObject.GetComponentsInChildren<Renderer>(true))
+                {
+                    foreach (Material mat in rend.sharedMaterials)
+                    {
+                        if (mat != null && mat.shader != null)
+                        {
+                            Shader nativeShader = Shader.Find(mat.shader.name);
+                            if (nativeShader != null)
+                                mat.shader = nativeShader;
+                        }
+                    }
+                }
+            }
         }
     }
 }
