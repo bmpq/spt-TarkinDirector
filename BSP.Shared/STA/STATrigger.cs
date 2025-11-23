@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#if STA
+using UnityEngine;
 using tarkin.SimpleTransformAnimation.Player;
 
 namespace tarkin.BSP.Shared.STA
@@ -29,3 +30,4 @@ namespace tarkin.BSP.Shared.STA
         }
     }
 }
+#endif

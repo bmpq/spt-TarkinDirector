@@ -2,7 +2,7 @@
 using UnityEngine;
 using tarkin.BSP.Shared;
 
-namespace tarkin.BSP.Editor
+namespace tarkin.BSP.EditorNamespace
 {
     internal class PersistentAudioSourceEditorPreview : MonoBehaviour
     {

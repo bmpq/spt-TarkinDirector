@@ -12,6 +12,25 @@ namespace tarkin.BSP.Shared
         [SerializeField] private bool playOnAwake = false;
         [SerializeField] private bool loop = false;
 
+#if UNITY_EDITOR
+        AudioSource audioSource
+        {
+            get
+            {
+                var source = GetComponent<AudioSource>();
+                if (source == null)
+                    return gameObject.AddComponent<AudioSource>();
+                return source;
+            }
+        }
+#endif
+
+        public void SetClip(AudioClip newClip, bool newLoopState)
+        {
+            clip = newClip;
+            loop = newLoopState;
+        }
+
         void OnEnable()
         {
             if (playOnAwake)
@@ -31,11 +50,20 @@ namespace tarkin.BSP.Shared
                 return;
 
             OnPlayRequest?.Invoke(this, clip, loop);
+
+#if UNITY_EDITOR
+            audioSource.clip = clip;
+            audioSource.Play();
+#endif
         }
 
         public void Stop()
         {
             OnStopRequest?.Invoke(this);
+
+#if UNITY_EDITOR
+            audioSource.Stop();
+#endif
         }
     }
 }

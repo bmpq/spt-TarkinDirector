@@ -2,7 +2,7 @@ using tarkin.BSP.Shared;
 using UnityEditor;
 using System;
 
-namespace tarkin.BSP.Editor
+namespace tarkin.BSP.EditorNamespace
 {
     [CustomEditor(typeof(EffectEmitter))]
     public class EffectEmitterEditor : UnityEditor.Editor

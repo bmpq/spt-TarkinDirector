@@ -2,7 +2,7 @@
 using UnityEditor;
 using tarkin.BSP.Shared.ArmatureRetargeting;
 
-namespace tarkin.BSP.Editor
+namespace tarkin.BSP.EditorNamespace
 {
     [CustomEditor(typeof(ArmatureMapping))]
     public class ArmatureMappingEditor : UnityEditor.Editor

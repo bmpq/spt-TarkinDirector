@@ -5,6 +5,7 @@
     <AssemblyName>BSP.Bep</AssemblyName>
     <LangVersion>latest</LangVersion>
     <Version>0.0.1</Version>
+    <Configurations>Debug;Release;SPT3_11</Configurations>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -38,35 +39,7 @@
     <Reference Include="$(SPTPath)\BepinEx\Plugins\tarkin\SimpleTransformAnimation.Player.dll" />
     <Reference Include="$(SPTPath)\BepinEx\Plugins\tarkin\SimpleTransformAnimation.Format.dll" />
     
-    <Reference Include="Assembly-CSharp">
-      <HintPath>$(SPTPath)\EscapeFromTarkov_Data\Managed\Assembly-CSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="Assembly-CSharp-firstpass">
-      <HintPath>$(SPTPath)\EscapeFromTarkov_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
-    </Reference>
-    <Reference Include="ItemComponent.Types">
-      <HintPath>$(SPTPath)\EscapeFromTarkov_Data\managed\ItemComponent.Types.dll</HintPath>
-    </Reference>
-
-    <Reference Include="Comfort">
-      <HintPath>$(SPTPath)\EscapeFromTarkov_Data\Managed\Comfort.dll</HintPath>
-    </Reference>
-    <Reference Include="Comfort.Unity">
-      <HintPath>$(SPTPath)\EscapeFromTarkov_Data\Managed\Comfort.Unity.dll</HintPath>
-    </Reference>
-    <Reference Include="CommonExtensions">
-      <HintPath>$(SPTPath)\EscapeFromTarkov_Data\managed\CommonExtensions.dll</HintPath>
-    </Reference>
-    <Reference Include="Sirenix.Serialization">
-      <HintPath>$(SPTPath)\EscapeFromTarkov_Data\managed\Sirenix.Serialization.dll</HintPath>
-    </Reference>
-    <Reference Include="DOTween">
-      <HintPath>$(SPTPath)\EscapeFromTarkov_Data\managed\DOTween.dll</HintPath>
-    </Reference>
-    <Reference Include="DOTween.Modules">
-      <HintPath>$(SPTPath)\EscapeFromTarkov_Data\managed\DOTween.Modules.dll</HintPath>
-    </Reference>
-    <Reference Include="$(SPTPath)\EscapeFromTarkov_Data\managed\DissonanceVoip.dll" />
+    <Reference Include="$(SPTPath)\EscapeFromTarkov_Data\Managed\*.dll" />
   </ItemGroup>
 
   <Target Name="CopyDllAfterBuild" AfterTargets="Build">

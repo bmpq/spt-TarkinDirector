@@ -1,8 +1,8 @@
 {
-    "name": "BSP.Editor",
+    "name": "BSP.EditorTools",
     "rootNamespace": "",
     "references": [
-        "GUID:534359d820b65a1498bdabc1e1471b9a"
+        "BSP.Shared"
     ],
     "includePlatforms": [
         "Editor",
