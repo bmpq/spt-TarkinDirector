@@ -18,7 +18,9 @@ namespace tarkin.BSP.Bep.Patches
         private static void PatchPostfix(SpatialAudioCrossSceneGroup __instance)
         {
             Patch_AudioRoomTracker_RegisterAllRooms.CurrentAudioRoomTracker.method_0();
+#if !SPT3_11
             Patch_AudioRoomTracker_RegisterAllRooms.CurrentAudioRoomTracker.method_1();
+#endif
         }
     }
 }

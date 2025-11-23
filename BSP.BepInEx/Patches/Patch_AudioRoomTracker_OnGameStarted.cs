@@ -3,19 +3,25 @@ using HarmonyLib;
 using SPT.Reflection.Patching;
 using System.Reflection;
 
+#if SPT3_11
+using AudioRoomTrackerClass = GClass1068;
+#else
+using AudioRoomTrackerClass = GClass1122;
+#endif
+
 namespace tarkin.BSP.Bep.Patches
 {
     internal class Patch_AudioRoomTracker_RegisterAllRooms : ModulePatch
     {
-        public static GClass1122 CurrentAudioRoomTracker { get; private set; }
+        public static AudioRoomTrackerClass CurrentAudioRoomTracker { get; private set; }
 
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.Method(typeof(GClass1122), nameof(GClass1122.method_0));
+            return AccessTools.Method(typeof(AudioRoomTrackerClass), nameof(AudioRoomTrackerClass.method_0));
         }
 
         [PatchPostfix]
-        private static void PatchPostfix(GClass1122 __instance)
+        private static void PatchPostfix(AudioRoomTrackerClass __instance)
         {
             CurrentAudioRoomTracker = __instance;
         }
@@ -23,7 +29,7 @@ namespace tarkin.BSP.Bep.Patches
         // for future assembly changes, and roslyn validation (compile-time check)
         private struct Signature
         {
-            Signature(GClass1122 validate)
+            Signature(AudioRoomTrackerClass validate)
             {
                 var _ = (
                     validate.ListenerCurrentOutdoorRoomID,
