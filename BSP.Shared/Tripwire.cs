@@ -12,11 +12,22 @@ namespace tarkin.BSP.Shared
         public static event Action<Tripwire> OnRequestSpawn;
         public static event Action<Tripwire> OnRequestRemove;
 
-        [SerializeField]
-        private Transform end;
+        public Transform end;
 
-        public Vector3 PosFrom => transform.position;
-        public Vector3 PosTo => end.position;
+        public Vector3 PosFrom
+        {
+            get => transform.position;
+            set => transform.position = value;
+        }
+        public Vector3 PosTo
+        {
+            get  {
+                if (end == null)
+                    Reset();
+                return end.position;
+            }
+            set => end.position = value;
+        }
         public string GrenadeGuid = "5e340dcdcb6d5863cc5e5efb";
 
         void OnEnable()
@@ -73,8 +84,8 @@ namespace tarkin.BSP.Shared
             Gizmos.DrawWireSphere(PosTo, 0.02f);
 
             Vector3 dirTo = (PosTo - PosFrom).normalized;
-            Vector3 grenadePos = PosFrom + new Vector3(0, height -0.05f, 0) + -dirTo * 0.05f;
-            Gizmos.DrawSphere(grenadePos, 0.04f);
+            Vector3 grenadePos = PosTo + new Vector3(0, height - 0.05f, 0) - dirTo * 0.05f;
+            Gizmos.DrawCube(grenadePos, new Vector3(0.04f, 0.05f, 0.04f));
         }
 #endif
     }
