@@ -2,6 +2,7 @@
 
 namespace tarkin.BSP.Shared
 {
+    [ExecuteAlways]
     [RequireComponent(typeof(Rigidbody))]
     internal class PhysicalOnDemand : MonoBehaviour
     {
@@ -17,6 +18,11 @@ namespace tarkin.BSP.Shared
         private Vector3 _trackedAngularVelocity;
 
         void OnEnable()
+        {
+            ResetToKinematic();
+        }
+
+        private void OnValidate()
         {
             ResetToKinematic();
         }
