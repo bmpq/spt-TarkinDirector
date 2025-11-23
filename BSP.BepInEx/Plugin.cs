@@ -54,6 +54,8 @@ namespace tarkin.BSP.Bep
 
             new Patch_AudioRoomTracker_RegisterAllRooms().Enable();
             new Patch_SpatialAudioCrossSceneGroup_OnDestroy().Enable();
+
+            new Patch_EnvironmentUIRoot_SetCameraActive().Enable();
         }
 
         private void InitConfiguration()

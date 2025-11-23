@@ -88,6 +88,7 @@ namespace tarkin.BSP.Bep
                 if (cameraProxies.Count == 0)
                     cameraOverride = false;
 
+                ToggleEnvUICam(!cameraOverride);
                 TogglePlayerCameraController(!cameraOverride);
             }
 
@@ -102,6 +103,11 @@ namespace tarkin.BSP.Bep
 
                 TransformGameCameraToBundleCamera(cameraOverrideFactor);
             }
+        }
+
+        private void ToggleEnvUICam(bool value)
+        {
+            Patch_EnvironmentUIRoot_SetCameraActive.CameraContainer?.gameObject.SetActive(value);
         }
 
         private void SetupFileWatcher()
@@ -167,6 +173,9 @@ namespace tarkin.BSP.Bep
             }
 
             if (activeProxyCamera == null)
+                return;
+
+            if (CameraClass.Instance.Camera == null)
                 return;
 
             CameraClass.Instance.Camera.transform.position = Vector3.Lerp(CameraClass.Instance.Camera.transform.position, activeProxyCamera.transform.position, t);
@@ -236,12 +245,6 @@ namespace tarkin.BSP.Bep
 
         IEnumerator LoadBundleRoutine(string fullPath)
         {
-            if (!Singleton<GameWorld>.Instantiated)
-            {
-                NotificationManagerClass.DisplayWarningNotification("Cannot load bundle: Not in raid!");
-                yield break;
-            }
-
             if (!File.Exists(fullPath))
             {
                 NotificationManagerClass.DisplayWarningNotification($"Bundle not found: '{Path.GetFileName(fullPath)}'");
@@ -321,6 +324,7 @@ namespace tarkin.BSP.Bep
             {
                 cameraProxies.AddRange(rootGameObject.GetComponentsInChildren<Camera>(true));
             }
+            return cameraProxies;
 
             foreach (Camera cam in cameraProxies)
             {
