@@ -1,9 +1,10 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace tarkin.BSP.Shared
 {
-    public class EFTTrigger : AnimatorAction
+    public class EFTTrigger : MonoBehaviour
     {
         public static void SendEFTEvent(Trigger trigger)
         {
@@ -22,6 +23,9 @@ namespace tarkin.BSP.Shared
         [SerializeField]
         private Trigger trigger;
 
+        [SerializeField]
+        private UnityEvent unityEvent;
+
         void OnEnable()
         {
             onEFTEvent += ReceiveEvent;
@@ -35,7 +39,7 @@ namespace tarkin.BSP.Shared
         void ReceiveEvent(Trigger trigger)
         {
             if (this.trigger == trigger)
-                Invoke();
+                unityEvent.Invoke();
         }
     }
 }

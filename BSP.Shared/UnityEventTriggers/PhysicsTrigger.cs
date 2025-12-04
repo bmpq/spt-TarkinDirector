@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
+using UnityEngine.Events;
 
 namespace tarkin.BSP.Shared
 {
     [RequireComponent(typeof(Collider))]
-    internal class PhysicsTrigger : AnimatorAction
+    internal class PhysicsTrigger : MonoBehaviour
     {
         enum Condition
         {
@@ -15,24 +16,25 @@ namespace tarkin.BSP.Shared
         [SerializeField]
         private Condition condition;
 
-        Collider col;
+        [SerializeField]
+        private UnityEvent unityEvent;
 
-        void Start()
+        void OnValidate()
         {
-            col = GetComponent<Collider>();
-            col.isTrigger = true;
+            GetComponent<Collider>().isTrigger = true;
+            gameObject.layer = 13;
         }
 
         void OnTriggerEnter(Collider other)
         {
             if (condition == Condition.Enter)
-                Invoke();
+                unityEvent.Invoke();
         }
 
         void OnTriggerExit(Collider other)
         {
             if (condition == Condition.Exit)
-                Invoke();
+                unityEvent.Invoke();
         }
     }
 }
