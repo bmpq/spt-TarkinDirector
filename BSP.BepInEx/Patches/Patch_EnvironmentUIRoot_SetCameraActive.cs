@@ -10,7 +10,7 @@ namespace tarkin.BSP.Bep.Patches
 {
     internal class Patch_EnvironmentUIRoot_SetCameraActive : ModulePatch
     {
-        public static Transform CameraContainer { get; private set; }
+        public static EnvironmentUIRoot CurrentEnvironmentUIRoot { get; private set; }
 
         protected override MethodBase GetTargetMethod()
         {
@@ -18,10 +18,10 @@ namespace tarkin.BSP.Bep.Patches
         }
 
         [PatchPostfix]
-        private static void PatchPostfix(EnvironmentUIRoot __instance, bool value, Transform ___CameraContainer)
+        private static void PatchPostfix(EnvironmentUIRoot __instance)
         {
-            Plugin.Log.LogInfo($"{___CameraContainer}: {value}");
-            CameraContainer = value ? ___CameraContainer : null;
+            CurrentEnvironmentUIRoot = __instance;
+            Plugin.Log.LogInfo($"{CurrentEnvironmentUIRoot.name}");
         }
     }
 }

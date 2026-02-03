@@ -88,11 +88,10 @@ namespace tarkin.BSP.Bep
                 if (cameraProxies.Count == 0)
                     cameraOverride = false;
 
-                ToggleEnvUICam(!cameraOverride);
                 TogglePlayerCameraController(!cameraOverride);
             }
 
-            if (cameraOverride && cameraProxies.Count > 0 && CameraClass.Instance.Camera != null)
+            if (cameraOverride && cameraProxies.Count > 0 && cameraOverrideFactor < 1f)
             {
                 if (cameraOverrideFactor < 1f)
                 {
@@ -100,14 +99,9 @@ namespace tarkin.BSP.Bep
                     if (cameraOverrideFactor > 1f)
                         cameraOverrideFactor = 1f;
                 }
-
+                
                 TransformGameCameraToBundleCamera(cameraOverrideFactor);
             }
-        }
-
-        private void ToggleEnvUICam(bool value)
-        {
-            Patch_EnvironmentUIRoot_SetCameraActive.CameraContainer?.gameObject.SetActive(value);
         }
 
         private void SetupFileWatcher()
@@ -162,8 +156,12 @@ namespace tarkin.BSP.Bep
 
         void TransformGameCameraToBundleCamera(float t)
         {
+            if (cameraProxies == null)
+            {
+                Plugin.Log.LogError("No proxy cameras were initialized!");
+                return;
+            }
             Camera activeProxyCamera = cameraProxies[0];
-
             foreach (var proxyCam in cameraProxies)
             {
                 if (proxyCam.isActiveAndEnabled)
@@ -172,12 +170,23 @@ namespace tarkin.BSP.Bep
                 }
             }
 
+            Patch_EnvironmentUIRoot_SetCameraActive.CurrentEnvironmentUIRoot?.SetCameraActive(false);
+            Patch_EnvironmentUIRoot_SetCameraActive.CurrentEnvironmentUIRoot?.Shading?.gameObject.SetActive(false);
+
             if (activeProxyCamera == null)
+            {
+                Plugin.Log.LogError("No proxy cameras on the loaded scene!");
                 return;
+            }
 
             if (CameraClass.Instance.Camera == null)
-                return;
+            {
+                CameraClass.Instance.Camera = new GameObject("can").AddComponent<Camera>(); 
+                
+                CameraClass.Instance.Camera.gameObject.tag = "MainCamera";
+            }
 
+            CameraClass.Instance.Camera.gameObject.SetActive(true);
             CameraClass.Instance.Camera.transform.position = Vector3.Lerp(CameraClass.Instance.Camera.transform.position, activeProxyCamera.transform.position, t);
             CameraClass.Instance.Camera.transform.rotation = Quaternion.Lerp(CameraClass.Instance.Camera.transform.rotation, activeProxyCamera.transform.rotation, t);
             CameraClass.Instance.Camera.fieldOfView = Mathf.Lerp(CameraClass.Instance.Camera.fieldOfView, activeProxyCamera.fieldOfView, t);
@@ -209,6 +218,8 @@ namespace tarkin.BSP.Bep
                     if (!Plugin.Silent.Value)
                         NotificationManagerClass.DisplayMessageNotification($"'{Path.GetFileName(fullPath)}' unloaded.");
                 }
+
+                yield return new WaitForSecondsRealtime(0.5f);
                 
                 yield return StartCoroutine(LoadBundleRoutine(fullPath));
             }
@@ -290,11 +301,15 @@ namespace tarkin.BSP.Bep
             }
 
             cameraProxies = FindSceneCameras(loadedScene);
+            Plugin.Log.LogInfo($"found {cameraProxies.Count} camera proxies");
 
             var bundleInfo = new LoadedBundleInfo(assetBundle, loadedScene);
             loadedAssetBundles.Add(fullPath, bundleInfo);
 
             ReplaceShadersToNative(loadedScene);
+
+            if (Plugin.SetActiveScene.Value)
+                SceneManager.SetActiveScene(loadedScene);
 
             if (Plugin.CleanDecals.Value)
             {
@@ -308,11 +323,10 @@ namespace tarkin.BSP.Bep
         void TogglePlayerCameraController(bool on)
         {
             Player player = Singleton<GameWorld>.Instance?.MainPlayer;
-            if (on && player != null && player.TryGetComponent<HideoutPlayerOwner>(out var hideoutPlayerOwner))
-            {
-                if (!hideoutPlayerOwner.FirstPersonMode)
-                    return;
-            }
+
+            var cinemachine = CameraClass.Instance.Camera?.GetComponent<Cinemachine.CinemachineBrain>();
+            if (cinemachine != null)
+                cinemachine.enabled = on;
 
             PlayerCameraController playerCameraController = player?.gameObject.GetComponent<PlayerCameraController>();
             if (playerCameraController != null)
@@ -328,7 +342,6 @@ namespace tarkin.BSP.Bep
             {
                 cameraProxies.AddRange(rootGameObject.GetComponentsInChildren<Camera>(true));
             }
-            return cameraProxies;
 
             foreach (Camera cam in cameraProxies)
             {
@@ -341,6 +354,8 @@ namespace tarkin.BSP.Bep
 
         void ReplaceShadersToNative(Scene scene)
         {
+            int replacedShaderCount = 0;
+
             foreach (GameObject rootGameObject in scene.GetRootGameObjects())
             {
                 foreach (Renderer rend in rootGameObject.GetComponentsInChildren<Renderer>(true))
@@ -350,12 +365,17 @@ namespace tarkin.BSP.Bep
                         if (mat != null && mat.shader != null)
                         {
                             Shader nativeShader = Shader.Find(mat.shader.name);
-                            if (nativeShader != null)
+                            if (nativeShader != null && mat.shader != nativeShader)
+                            {
                                 mat.shader = nativeShader;
+                                replacedShaderCount++;
+                            }
                         }
                     }
                 }
             }
+
+            Plugin.Log.LogInfo($"replaced {replacedShaderCount} shaders");
         }
     }
 }

@@ -39,11 +39,15 @@ namespace tarkin.BSP.Shared
             foreach (var rb in rbs)
             {
                 rb.isKinematic = false;
+                rb.WakeUp();
             }
         }
 
         public void ResetToKinematic()
         {
+            if (!Application.isPlaying)
+                return;
+
             Init();
 
             foreach (var rb in rbs)

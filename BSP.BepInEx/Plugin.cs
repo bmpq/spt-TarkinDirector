@@ -14,7 +14,7 @@ namespace tarkin.BSP.Bep
     internal class Plugin : BaseUnityPlugin
     {
         public static string AddAssembliesPathToPluginPath = Path.Combine("tarkin");
-        public static string AddBundlesPathToPluginPath = Path.Combine("tarkin", "bundles", "bsp_scenes");
+        public static string AddBundlesPathToPluginPath = Path.Combine("tarkin", "bundles");
 
         internal static new ManualLogSource Log;
 
@@ -27,6 +27,7 @@ namespace tarkin.BSP.Bep
         internal static ConfigEntry<string> PrewarmAssemblies;
         internal static ConfigEntry<bool> Silent;
         internal static ConfigEntry<bool> CleanDecals;
+        internal static ConfigEntry<bool> SetActiveScene;
         internal static ConfigEntry<bool> MonitorForChanges;
 
         public static string BundleFullPath => Path.Combine(BepInEx.Paths.PluginPath, AddBundlesPathToPluginPath, BundleName.Value);
@@ -47,6 +48,7 @@ namespace tarkin.BSP.Bep
             new HurtBoxMediator();
             new EffectEmitterMediator();
             new SpawnPointMediator();
+            new TODMediator();
 
             new Patch_Door_KickOpen().Enable();
             new Patch_WorldInteractiveObject_DoorStateChanged().Enable();
@@ -76,6 +78,7 @@ namespace tarkin.BSP.Bep
 
             Silent = Config.Bind("General", "Silent", false);
             CleanDecals = Config.Bind("General", "CleanDecalsOnLoad", true);
+            SetActiveScene = Config.Bind("General", "SetActiveScene", false);
         }
     }
 }
