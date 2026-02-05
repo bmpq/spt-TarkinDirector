@@ -60,12 +60,21 @@ namespace tarkin.BSP.Bep
             {
                 if (operation == null)
                 {
-                    operation = StartCoroutine(ReloadBundle(Plugin.BundleFullPath));
+                    var pathsToLoad = Plugin.GetConfiguredBundlePaths();
+
+                    if (pathsToLoad.Count > 0)
+                    {
+                        operation = StartCoroutine(ReloadBundlesSequence(pathsToLoad));
+                    }
+                    else
+                    {
+                        NotificationManagerClass.DisplayWarningNotification("No bundles configured in settings!");
+                    }
                 }
                 else
                 {
                     if (!Plugin.Silent.Value)
-                    NotificationManagerClass.DisplayWarningNotification($"Busy!");
+                        NotificationManagerClass.DisplayWarningNotification($"Busy!");
                 }
             }
 
@@ -147,20 +156,27 @@ namespace tarkin.BSP.Bep
             }
         }
 
-        IEnumerator ReloadBundle(string fullPath)
+        IEnumerator ReloadBundlesSequence(List<string> targetPaths)
         {
             try
             {
-                if (loadedAssetBundles.ContainsKey(fullPath))
+                var currentLoadedPaths = loadedAssetBundles.Keys.ToList();
+                foreach (var loadedPath in currentLoadedPaths)
                 {
-                    yield return StartCoroutine(UnloadBundleRoutine(fullPath));
-                    if (!Plugin.Silent.Value)
-                        NotificationManagerClass.DisplayMessageNotification($"'{Path.GetFileName(fullPath)}' unloaded.");
+                    if (!targetPaths.Contains(loadedPath) || true)
+                    {
+                        yield return StartCoroutine(UnloadBundleRoutine(loadedPath));
+                    }
                 }
 
                 yield return new WaitForSecondsRealtime(0.5f);
-                
-                yield return StartCoroutine(LoadBundleRoutine(fullPath));
+
+                foreach (var path in targetPaths)
+                {
+                    if (loadedAssetBundles.ContainsKey(path)) continue;
+
+                    yield return StartCoroutine(LoadBundleRoutine(path));
+                }
             }
             finally
             {

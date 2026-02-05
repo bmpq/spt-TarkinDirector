@@ -7,6 +7,7 @@ using UnityEngine;
 using tarkin.SimpleTransformAnimation.Player;
 using tarkin.SimpleTransformAnimation.Format;
 using tarkin.BSP.Bep.Mediators;
+using System.Collections.Generic;
 
 namespace tarkin.BSP.Bep
 {
@@ -28,9 +29,24 @@ namespace tarkin.BSP.Bep
         internal static ConfigEntry<bool> Silent;
         internal static ConfigEntry<bool> CleanDecals;
         internal static ConfigEntry<bool> SetActiveScene;
-        internal static ConfigEntry<bool> MonitorForChanges;
 
         public static string BundleFullPath => Path.Combine(BepInEx.Paths.PluginPath, AddBundlesPathToPluginPath, BundleName.Value);
+
+        private const int MAX_BUNDLE_SLOTS = 5;
+        internal static List<ConfigEntry<string>> BundleSlots = new List<ConfigEntry<string>>();
+
+        public static List<string> GetConfiguredBundlePaths()
+        {
+            var paths = new List<string>();
+            foreach (var slot in BundleSlots)
+            {
+                if (!string.IsNullOrWhiteSpace(slot.Value))
+                {
+                    paths.Add(Path.Combine(BepInEx.Paths.PluginPath, AddBundlesPathToPluginPath, slot.Value));
+                }
+            }
+            return paths;
+        }
 
         private void Start()
         {
@@ -62,15 +78,22 @@ namespace tarkin.BSP.Bep
 
         private void InitConfiguration()
         {
-            BundleName = Config.Bind("General", "Bundle name", "scene_buckshot", "");
+            for (int i = 0; i < MAX_BUNDLE_SLOTS; i++)
+            {
+                int slotNum = i + 1;
+                string defaultValue = "";
+
+                var entry = Config.Bind("Bundle Slots", $"Bundle {slotNum}", defaultValue,
+                    $"Name of bundle file #{slotNum} to load.");
+
+                BundleSlots.Add(entry);
+            }
 
             PrewarmAssemblies = Config.Bind("General", "PrewarmAssemblies", "", 
                 "Prewarm assemblies separated by a comma, without extention. " +
                 "Prewarming is required when a scene contains serialized references to that assembly, since Unity doesn't load them automatically.");
 
             CameraOverrideHandoverSpeed = Config.Bind("General", "CameraOverrideHandoverSpeed", 2f, "");
-
-            MonitorForChanges = Config.Bind("General", "Monitor for changes", false, "When enabled, the loaded bundle file will be monitored for changes and reloaded automatically.");
 
             KeybindPlayback = Config.Bind("Keybinds", "Keybind Playback", new KeyboardShortcut(KeyCode.Insert));
             KeybindUnloadAll = Config.Bind("Keybinds", "Keybind Unload All", new KeyboardShortcut(KeyCode.Delete));
