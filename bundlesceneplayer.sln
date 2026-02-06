@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.10.35122.118
+# Visual Studio Version 18
+VisualStudioVersion = 18.2.11415.280 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BSP.Bep", "BSP.BepInEx\BSP.Bep.csproj", "{FDAB9BC6-BF38-4B35-B726-8CB82D02BC52}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BSP.Bep", "BSP.BepInEx\BSP.
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BSP.Shared", "BSP.Shared\BSP.Shared.csproj", "{3B7B63C7-74F1-4CBE-9B18-B94A3835BE4B}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleTransformAnimation.Player", "..\SimpleTransformAnimation\SimpleTransformAnimation.Player\SimpleTransformAnimation.Player.csproj", "{64FC6F64-D7BE-52A7-64CF-52845C38FF17}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,12 +29,6 @@ Global
 		{3B7B63C7-74F1-4CBE-9B18-B94A3835BE4B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3B7B63C7-74F1-4CBE-9B18-B94A3835BE4B}.SPT3_11|Any CPU.ActiveCfg = Release|Any CPU
 		{3B7B63C7-74F1-4CBE-9B18-B94A3835BE4B}.SPT3_11|Any CPU.Build.0 = Release|Any CPU
-		{64FC6F64-D7BE-52A7-64CF-52845C38FF17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{64FC6F64-D7BE-52A7-64CF-52845C38FF17}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{64FC6F64-D7BE-52A7-64CF-52845C38FF17}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{64FC6F64-D7BE-52A7-64CF-52845C38FF17}.Release|Any CPU.Build.0 = Release|Any CPU
-		{64FC6F64-D7BE-52A7-64CF-52845C38FF17}.SPT3_11|Any CPU.ActiveCfg = Release|Any CPU
-		{64FC6F64-D7BE-52A7-64CF-52845C38FF17}.SPT3_11|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
