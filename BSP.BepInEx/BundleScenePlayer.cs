@@ -13,6 +13,7 @@ using UnityEngine.SceneManagement;
 
 namespace tarkin.BSP.Bep
 {
+    [DefaultExecutionOrder(1000)]
     internal class BundleScenePlayer : MonoBehaviour
     {
         private class LoadedBundleInfo
@@ -42,7 +43,7 @@ namespace tarkin.BSP.Bep
             dummyRenderTexture.Create();
         }
 
-        void Update()
+        void LateUpdate()
         {
             if (Input.GetKeyDown(Plugin.KeybindUnloadAll.Value.MainKey))
             {
@@ -97,9 +98,9 @@ namespace tarkin.BSP.Bep
                     if (cameraOverrideFactor > 1f)
                         cameraOverrideFactor = 1f;
                 }
-                
-                TransformGameCameraToBundleCamera(cameraOverrideFactor);
             }
+
+            TransformGameCameraToBundleCamera(cameraOverrideFactor);
         }
 
         void TransformGameCameraToBundleCamera(float t)
@@ -109,6 +110,10 @@ namespace tarkin.BSP.Bep
                 Plugin.Log.LogError("No proxy cameras were initialized!");
                 return;
             }
+
+            if (t == 0)
+                return;
+
             Camera activeProxyCamera = cameraProxies[0];
             foreach (var proxyCam in cameraProxies)
             {
@@ -138,6 +143,8 @@ namespace tarkin.BSP.Bep
             CameraClass.Instance.Camera.transform.position = Vector3.Lerp(CameraClass.Instance.Camera.transform.position, activeProxyCamera.transform.position, t);
             CameraClass.Instance.Camera.transform.rotation = Quaternion.Lerp(CameraClass.Instance.Camera.transform.rotation, activeProxyCamera.transform.rotation, t);
             CameraClass.Instance.Camera.fieldOfView = Mathf.Lerp(CameraClass.Instance.Camera.fieldOfView, activeProxyCamera.fieldOfView, t);
+            CameraClass.Instance.Camera.nearClipPlane = activeProxyCamera.nearClipPlane;
+            CameraClass.Instance.Camera.farClipPlane = activeProxyCamera.farClipPlane;
         }
 
         IEnumerator UnloadAllBundlesRoutine()
