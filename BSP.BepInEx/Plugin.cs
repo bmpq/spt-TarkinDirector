@@ -8,6 +8,9 @@ using tarkin.SimpleTransformAnimation.Player;
 using tarkin.SimpleTransformAnimation.Format;
 using tarkin.BSP.Bep.Mediators;
 using System.Collections.Generic;
+using tarkin.BSP.Shared.Interactable;
+using tarkin.BSP.Bep.Mediators.Interactable;
+using tarkin.BSP.Bep.Patches.Interactable;
 
 namespace tarkin.BSP.Bep
 {
@@ -50,6 +53,9 @@ namespace tarkin.BSP.Bep
 
         private void Start()
         {
+            InteractableLogic.OnAwake += (interactable) => interactable.gameObject.AddComponent<InteractableRelay>();
+            new Patch_InteractionContextHelper_GetAvailableActions().Enable();
+
             var prewarm = (typeof(BoneMapping), typeof(NodeData));
             InitConfiguration();
 
