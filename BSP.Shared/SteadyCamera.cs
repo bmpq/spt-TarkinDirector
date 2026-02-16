@@ -2,6 +2,7 @@
 
 namespace tarkin.BSP.Shared
 {
+    [ExecuteAlways]
     public class SteadyCamera : MonoBehaviour
     {
         public Transform target;

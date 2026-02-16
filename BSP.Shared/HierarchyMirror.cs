@@ -5,6 +5,7 @@ public class HierarchyMirror : MonoBehaviour
 {
     [SerializeField] private Transform sourceRoot;
     [SerializeField] private bool editModeOnly;
+    [SerializeField] private bool skipRoot;
 
     void Update()
     {
@@ -19,9 +20,12 @@ public class HierarchyMirror : MonoBehaviour
 
     private void MirrorTransforms(Transform source, Transform target)
     {
-        target.localPosition = source.localPosition;
-        target.localRotation = source.localRotation;
-        target.localScale = source.localScale;
+        if (!(skipRoot && target == transform))
+        {
+            target.localPosition = source.localPosition;
+            target.localRotation = source.localRotation;
+            target.localScale = source.localScale;
+        }
 
         foreach (Transform sourceChild in source)
         {
