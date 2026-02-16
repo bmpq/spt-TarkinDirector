@@ -105,9 +105,8 @@ namespace tarkin.BSP.Bep
 
         void TransformGameCameraToBundleCamera(float t)
         {
-            if (cameraProxies == null)
+            if (cameraProxies == null || cameraProxies.Count == 0)
             {
-                Plugin.Log.LogError("No proxy cameras were initialized!");
                 return;
             }
 
