@@ -20,6 +20,14 @@ namespace tarkin.BSP.Shared.Interactable
             HandsAnimation = EInteraction.TakeItem,
             TargetName = lootName
         };
+
+        public static InteractableAction Generic(string name) => new InteractableAction
+        {
+            Name = name,
+            IsDisabled = false,
+            HandsAnimation = EInteraction.CloseCover,
+            TargetName = string.Empty
+        };
     }
 
     public enum EInteraction : byte

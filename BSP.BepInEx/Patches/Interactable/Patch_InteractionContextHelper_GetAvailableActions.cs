@@ -17,7 +17,7 @@ namespace tarkin.BSP.Bep.Patches.Interactable
         }
 
         [PatchPrefix]
-        private static bool PatchPrefix(ref ActionsReturnClass __result, HideoutPlayerOwner owner, IInteractive interactive)
+        private static bool PatchPrefix(ref ActionsReturnClass __result, GamePlayerOwner owner, IInteractive interactive)
         {
             InteractableRelay relay = interactive as InteractableRelay;
             if (relay == null)
