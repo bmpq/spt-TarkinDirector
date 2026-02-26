@@ -1,24 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace tarkin.BSP.Shared.Interactable
 {
-    internal class InteractableInvokeReflectionStaticMethod : InteractableLogic
+    internal class InteractableInvokeUnityEvent : InteractableLogic
     {
         [SerializeField]
-        [Tooltip("Format: 'Namespace.Class.Method' OR 'Assembly::Namespace.Class.Method'")]
-        private string[] entries;
+        private UnityEvent[] entries;
+
+        [SerializeField]
+        private string[] entryEFTActions;
 
         public override IEnumerable<InteractableAction> GetActions()
         {
             List<InteractableAction> actions = new List<InteractableAction>();
 
-            foreach (var entry in entries)
+            foreach (var entryName in entryEFTActions)
             {
-                if (!string.IsNullOrEmpty(entry))
+                if (!string.IsNullOrEmpty(entryName))
                 {
-                    actions.Add(InteractableAction.Generic(entry));
+                    actions.Add(InteractableAction.Generic(entryName));
                 }
             }
 
@@ -27,13 +30,13 @@ namespace tarkin.BSP.Shared.Interactable
 
         public override void ExecuteAction(string actionName, Action finishCallback)
         {
-            for (int i = 0; i < entries.Length; i++)
+            for (int i = 0; i < entryEFTActions.Length; i++)
             {
-                if (entries[i] == actionName)
+                if (entryEFTActions[i] == actionName)
                 {
-                    if (!string.IsNullOrEmpty(entries[i]))
+                    if (i < entries.Length && entries[i] != null)
                     {
-                        ReflectionHelper.InvokeStaticMethod(entries[i]);
+                        entries[i].Invoke();
                     }
                     break;
                 }
@@ -41,6 +44,5 @@ namespace tarkin.BSP.Shared.Interactable
 
             finishCallback?.Invoke();
         }
-
     }
 }
