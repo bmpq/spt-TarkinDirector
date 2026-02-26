@@ -11,7 +11,7 @@ using Comfort.Common;
 using EFT.InventoryLogic;
 using EFT;
 using HarmonyLib;
-using tarkin.Director.Patches;
+using tarkin.Director.Bep.Patches;
 #endif
 
 namespace tarkin.Director

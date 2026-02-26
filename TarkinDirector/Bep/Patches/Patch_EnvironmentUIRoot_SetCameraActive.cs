@@ -6,7 +6,7 @@ using System;
 using System.Reflection;
 using UnityEngine;
 
-namespace tarkin.BSP.Bep.Patches
+namespace tarkin.Director.Bep.Patches
 {
     internal class Patch_EnvironmentUIRoot_SetCameraActive : ModulePatch
     {

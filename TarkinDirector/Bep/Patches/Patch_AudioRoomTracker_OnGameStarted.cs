@@ -3,13 +3,14 @@ using HarmonyLib;
 using SPT.Reflection.Patching;
 using System.Reflection;
 
+
 #if SPT3_11
 using AudioRoomTrackerClass = GClass1068;
 #else
 using AudioRoomTrackerClass = GClass1122;
 #endif
 
-namespace tarkin.BSP.Bep.Patches
+namespace tarkin.Director.Bep.Patches
 {
     internal class Patch_AudioRoomTracker_RegisterAllRooms : ModulePatch
     {

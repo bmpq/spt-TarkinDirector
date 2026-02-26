@@ -2,14 +2,12 @@
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using System.IO;
-using tarkin.BSP.Bep.Patches;
 using UnityEngine;
 using System.Collections.Generic;
-using tarkin.Director.Interactable;
-using tarkin.BSP.Bep.Patches.Interactable;
-using tarkin.Director.Patches;
+using tarkin.Director.EFTRuntime;
+using tarkin.Director.Bep.Patches;
 
-namespace tarkin.Director.EFTRuntime
+namespace tarkin.Director.Bep
 {
     [BepInPlugin("com.tarkin.bundlesceneplayer", MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
     internal class Plugin : BaseUnityPlugin

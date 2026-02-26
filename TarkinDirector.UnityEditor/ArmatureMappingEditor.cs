@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using UnityEditor;
-using tarkin.BSP.Shared.ArmatureRetargeting;
+using tarkin.Director.ArmatureRetargeting;
 
-namespace tarkin.BSP.EditorNamespace
+namespace tarkin.Director.EditorTools
 {
     [CustomEditor(typeof(ArmatureMapping))]
     public class ArmatureMappingEditor : UnityEditor.Editor

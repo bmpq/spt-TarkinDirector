@@ -19,5 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TarkinDirector\TarkinDirector.csproj" />
+    
+    <Reference Include="$(UnityEditorBinaryPath_2022_3)\UnityEditor.dll" />
   </ItemGroup>
 </Project>

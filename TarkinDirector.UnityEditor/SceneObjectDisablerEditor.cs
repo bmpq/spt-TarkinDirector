@@ -3,9 +3,8 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using System.Collections.Generic;
 using System.Linq;
-using tarkin.BSP.Shared;
 
-namespace tarkin.BSP.EditorNamespace
+namespace tarkin.Director.EditorTools
 {
     public class SceneObjectDisablerWindow : EditorWindow
     {

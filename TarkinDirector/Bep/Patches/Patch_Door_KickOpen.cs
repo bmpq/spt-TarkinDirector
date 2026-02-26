@@ -7,7 +7,7 @@ using System.Reflection;
 using tarkin.Director;
 using UnityEngine;
 
-namespace tarkin.BSP.Bep.Patches
+namespace tarkin.Director.Bep.Patches
 {
     internal class Patch_Door_KickOpen : ModulePatch
     {

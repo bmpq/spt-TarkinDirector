@@ -1,6 +1,6 @@
 {
-    "name": "BSP.Bep",
-    "rootNamespace": "",
+    "name": "TarkinDirector",
+    "rootNamespace": "tarkin.Director",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -8,9 +8,7 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": [
-        "IGNORE"
-    ],
+    "defineConstraints": [],
     "versionDefines": [],
     "noEngineReferences": false
 }

@@ -7,7 +7,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Systems.Effects;
-using tarkin.BSP.Bep.Patches;
+using tarkin.Director.Bep;
+using tarkin.Director.Bep.Patches;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 

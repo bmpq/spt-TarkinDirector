@@ -5,7 +5,7 @@ using SPT.Reflection.Patching;
 using System;
 using System.Reflection;
 
-namespace tarkin.BSP.Bep.Patches
+namespace tarkin.Director.Bep.Patches
 {
     internal class Patch_SpatialAudioCrossSceneGroup_Awake : ModulePatch
     {

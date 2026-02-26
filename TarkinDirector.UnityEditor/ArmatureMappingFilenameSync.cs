@@ -1,33 +1,33 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
-using tarkin.BSP.Shared.ArmatureRetargeting;
 using UnityEditor;
-using UnityEngine;
+using tarkin.Director.ArmatureRetargeting;
 
-[InitializeOnLoad]
-public static class ArmatureMappingFilenameSync
+namespace tarkin.Director.EditorTools
 {
-    static ArmatureMappingFilenameSync()
+    [InitializeOnLoad]
+    public static class ArmatureMappingFilenameSync
     {
-        EditorApplication.projectChanged += UpdateFilenames;
-    }
-
-    static void UpdateFilenames()
-    {
-        string[] guids = AssetDatabase.FindAssets($"t:{nameof(BoneMapping)}");
-        foreach (string guid in guids)
+        static ArmatureMappingFilenameSync()
         {
-            string path = AssetDatabase.GUIDToAssetPath(guid);
-            var asset = AssetDatabase.LoadAssetAtPath<BoneMapping>(path);
-            string name = Path.GetFileNameWithoutExtension(path);
+            EditorApplication.projectChanged += UpdateFilenames;
+        }
 
-            if (name.Contains("=="))
+        static void UpdateFilenames()
+        {
+            string[] guids = AssetDatabase.FindAssets($"t:{nameof(BoneMapping)}");
+            foreach (string guid in guids)
             {
-                string[] mapping = name.Split("==");
-                asset.boneSource = mapping[0];
-                asset.boneTarget = mapping[1];
-                EditorUtility.SetDirty(asset);
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                var asset = AssetDatabase.LoadAssetAtPath<BoneMapping>(path);
+                string name = Path.GetFileNameWithoutExtension(path);
+
+                if (name.Contains("=="))
+                {
+                    string[] mapping = name.Split(new[] { "==" }, System.StringSplitOptions.None);
+                    asset.boneSource = mapping[0];
+                    asset.boneTarget = mapping[1];
+                    EditorUtility.SetDirty(asset);
+                }
             }
         }
     }

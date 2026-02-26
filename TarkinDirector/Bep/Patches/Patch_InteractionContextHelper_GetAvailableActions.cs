@@ -7,7 +7,7 @@ using tarkin.Director.Interactable;
 using InteractionContextHelper = GetActionsClass;
 using IInteractive = GInterface177;
 
-namespace tarkin.BSP.Bep.Patches.Interactable
+namespace tarkin.Director.Bep.Patches
 {
     internal class Patch_InteractionContextHelper_GetAvailableActions : ModulePatch
     {

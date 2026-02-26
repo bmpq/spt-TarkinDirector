@@ -5,7 +5,7 @@ using SPT.Reflection.Patching;
 using System;
 using System.Reflection;
 
-namespace tarkin.Director.Patches
+namespace tarkin.Director.Bep.Patches
 {
     internal class Patch_TripwireSynchronizableObject_SetupGrenade : ModulePatch
     {

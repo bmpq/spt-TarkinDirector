@@ -1,8 +1,7 @@
-using tarkin.BSP.Shared;
 using UnityEditor;
 using UnityEngine;
 
-namespace tarkin.BSP.EditorNamespace
+namespace tarkin.Director.EditorTools
 {
     [CustomEditor(typeof(Tripwire))]
     public class TripwireEditor : Editor
