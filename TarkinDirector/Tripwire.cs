@@ -18,22 +18,9 @@ namespace tarkin.Director
 {
     public class Tripwire : MonoBehaviour
     {
-        public Transform end;
+        public Vector3 PosFrom => transform.position;
+        public Vector3 PosTo;
 
-        public Vector3 PosFrom
-        {
-            get => transform.position;
-            set => transform.position = value;
-        }
-        public Vector3 PosTo
-        {
-            get  {
-                if (end == null)
-                    Reset();
-                return end.position;
-            }
-            set => end.position = value;
-        }
         public string GrenadeGuid = "5e340dcdcb6d5863cc5e5efb";
 
 #if EFT_RUNTIME
@@ -96,28 +83,10 @@ namespace tarkin.Director
         }
 #endif
 
-        void Reset()
-        {
-            if (transform.childCount > 0)
-            {
-                end = transform.GetChild(0);
-            }
-            else
-            {
-                end = new GameObject("end").transform;
-                end.SetParent(transform, false);
-            }
-        }
-
 #if UNITY_EDITOR
         [DrawGizmo(GizmoType.Pickable | GizmoType.NonSelected)]
         private void OnDrawGizmos()
         {
-            if (end == null)
-            {
-                return;
-            }
-
             Gizmos.color = Color.yellow;
 
             float height = 0.2f;
