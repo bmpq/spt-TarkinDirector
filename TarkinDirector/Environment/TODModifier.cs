@@ -10,8 +10,6 @@ namespace tarkin.Director
 {
     public class TODModifier : MonoBehaviour
     {
-        public static event Action<int> OnTODChangeRequested;
-
         [Range(0, 23)]
         [SerializeField] private int todHour = 12;
         [Range(0, 59)]
