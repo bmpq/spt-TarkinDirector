@@ -84,6 +84,12 @@ namespace tarkin.Director
 #endif
 
 #if UNITY_EDITOR
+        void Reset()
+        {
+            PosTo = PosFrom + new Vector3(1, 0, 0);
+        }
+
+
         [DrawGizmo(GizmoType.Pickable | GizmoType.NonSelected)]
         private void OnDrawGizmos()
         {
