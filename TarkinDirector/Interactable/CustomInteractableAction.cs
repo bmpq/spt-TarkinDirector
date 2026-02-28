@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace tarkin.Director.Interactable
+﻿namespace tarkin.Director.Interactable
 {
     public struct CustomInteractableAction
     {
@@ -26,7 +20,7 @@ namespace tarkin.Director.Interactable
             Name = name,
             IsDisabled = false,
             HandsAnimation = EInteraction.CloseCover,
-            TargetName = string.Empty
+            TargetName = null
         };
     }
 
