@@ -24,6 +24,16 @@ namespace tarkin.Director.EditorTools
         {
             Tripwire tripwire = (Tripwire)target;
 
+            Event e = Event.current;
+            bool shiftHeld = e.shift;
+
+            // Suppress shift modifier so PositionHandle doesn't enter screen-space mode
+            if (shiftHeld)
+                e.modifiers &= ~EventModifiers.Shift;
+
+            Vector3 prevFrom = tripwire.transform.position;
+            Vector3 prevTo = tripwire.PosTo;
+
             // Position handle for PosFrom (transform.position)
             EditorGUI.BeginChangeCheck();
             Vector3 newFrom = Handles.PositionHandle(tripwire.transform.position, Quaternion.identity);
@@ -32,6 +42,14 @@ namespace tarkin.Director.EditorTools
                 Undo.RecordObject(tripwire.transform, "Move Tripwire From");
                 tripwire.transform.position = newFrom;
                 _draggingFrom = true;
+
+                if (shiftHeld)
+                {
+                    Vector3 delta = newFrom - prevFrom;
+                    Undo.RecordObject(tripwire, "Move Tripwire To (Shift)");
+                    tripwire.PosTo += delta;
+                    _draggingTo = true;
+                }
             }
 
             // Position handle for PosTo
@@ -42,7 +60,19 @@ namespace tarkin.Director.EditorTools
                 Undo.RecordObject(tripwire, "Move Tripwire To");
                 tripwire.PosTo = newTo;
                 _draggingTo = true;
+
+                if (shiftHeld)
+                {
+                    Vector3 delta = newTo - prevTo;
+                    Undo.RecordObject(tripwire.transform, "Move Tripwire From (Shift)");
+                    tripwire.transform.position += delta;
+                    _draggingFrom = true;
+                }
             }
+
+            // Restore shift modifier
+            if (shiftHeld)
+                e.modifiers |= EventModifiers.Shift;
 
             // Detect handle release: hotControl transitions from non-zero to zero
             if (_previousHotControl != 0 && GUIUtility.hotControl == 0)
