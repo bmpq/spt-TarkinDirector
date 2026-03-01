@@ -61,8 +61,10 @@ namespace tarkin.Director
             };
 
 #if EFT_RUNTIME
+            if (!Singleton<Effects>.Instantiated)
+                return;
             Effects.Effect effect = Singleton<Effects>.Instance.EffectsArray.Where(e => e.Name == request.Name).FirstOrDefault();
-            if (effect == null || !Singleton<Effects>.Instantiated)
+            if (effect == null)
                 return;
             Singleton<Effects>.Instance.AddEffectEmit(effect, request.Position, request.Normal, null, request.DrawDecal, request.Volume);
 #endif

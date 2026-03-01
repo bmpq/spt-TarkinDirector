@@ -33,10 +33,6 @@
     <Reference Include="$(SPTPath)\BepInEx\core\0Harmony.dll" />
     <Reference Include="$(SPTPath)\BepInEx\plugins\spt\spt-reflection.dll" />
     
-    <Reference Include="$(SPTPath)\BepinEx\Plugins\tarkin\IMGUIDebugDraw.dll" />
-    <Reference Include="$(SPTPath)\BepinEx\Plugins\tarkin\SimpleTransformAnimation.Player.dll" />
-    <Reference Include="$(SPTPath)\BepinEx\Plugins\tarkin\SimpleTransformAnimation.Format.dll" />
-    
     <Reference Include="$(SPTPath)\EscapeFromTarkov_Data\Managed\*.dll" />
   </ItemGroup>
   <Target Name="CopyDllAfterBuild" AfterTargets="Build">

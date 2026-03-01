@@ -10,9 +10,6 @@ namespace tarkin.Director
 {
     public class SmokeGrenade : MonoBehaviour
     {
-        public static event Action<SmokeGrenade> OnRequestStart;
-        public static event Action<SmokeGrenade> OnRequestStop;
-
         [SerializeField] private float delay = 0f;
         [SerializeField] private float emitTime = 90f;
 
@@ -58,9 +55,9 @@ namespace tarkin.Director
 #if EFT_RUNTIME
             grenadeEmission = Singleton<Effects>.Instance.GetEmissionEffect(emissionEffect);
 
-            grenadeEmission.AttachTo(transform, Vector3.zero);
-            grenadeEmission.SetFillParams(0f, emitTime);
-            grenadeEmission.StartEmission(0f);
+            grenadeEmission.AttachTo(transform, offset: Vector3.zero);
+            grenadeEmission.SetFillParams(timePastSinceStart: 0f, emitTime);
+            grenadeEmission.StartEmission(prewarm: 0f);
 #endif
         }
 
@@ -69,7 +66,8 @@ namespace tarkin.Director
             isEmitting = false;
 
 #if EFT_RUNTIME
-            grenadeEmission?.StopEmission(null);
+            if (grenadeEmission != null)
+                grenadeEmission.StopEmission(null);
 #endif
         }
     }
