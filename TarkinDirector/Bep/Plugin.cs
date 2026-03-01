@@ -25,6 +25,8 @@ namespace tarkin.Director.Bep
         internal static ConfigEntry<bool> CleanDecals;
         internal static ConfigEntry<bool> SetActiveScene;
 
+        internal static ConfigEntry<bool> InfiniteAmmo;
+
         private const int MAX_BUNDLE_SLOTS = 5;
         internal static List<ConfigEntry<string>> BundleSlots = new List<ConfigEntry<string>>();
 
@@ -55,10 +57,9 @@ namespace tarkin.Director.Bep
             new Patch_WorldInteractiveObject_DoorStateChanged().Enable();
             new Patch_TripwireSynchronizableObject_SetupGrenade().Enable();
 
-            new Patch_AudioRoomTracker_RegisterAllRooms().Enable();
-            new Patch_SpatialAudioCrossSceneGroup_OnDestroy().Enable();
-
             new Patch_EnvironmentUIRoot_SetCameraActive().Enable();
+
+            new Patch_FirearmController_InitiateShot().Enable();
         }
 
         private void InitConfiguration()
@@ -87,6 +88,8 @@ namespace tarkin.Director.Bep
             Silent = Config.Bind("General", "Silent", false);
             CleanDecals = Config.Bind("General", "CleanDecalsOnLoad", true);
             SetActiveScene = Config.Bind("General", "SetActiveScene", false);
+
+            InfiniteAmmo = Config.Bind("Gameplay", "InfiniteAmmo", false);
         }
     }
 }
