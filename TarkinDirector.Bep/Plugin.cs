@@ -6,6 +6,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using tarkin.Director.EFTRuntime;
 using tarkin.Director.Bep.Patches;
+using SPT.Reflection.Patching;
 
 namespace tarkin.Director.Bep
 {
@@ -37,29 +38,27 @@ namespace tarkin.Director.Bep
             {
                 if (!string.IsNullOrWhiteSpace(slot.Value))
                 {
-                    paths.Add(Path.Combine(BepInEx.Paths.PluginPath, "tarkin", "bundles", slot.Value));
+                    paths.Add(Path.Combine(BepInEx.Paths.PluginPath, slot.Value));
                 }
             }
             return paths;
         }
 
+        private PatchManager patchManager;
+        private BundleScenePlayer bundleScenePlayer;
+
         private void Start()
         {
-            new Patch_InteractionContextHelper_GetAvailableActions().Enable();
-
             InitConfiguration();
 
             Log = base.Logger;
 
-            DontDestroyOnLoad(new GameObject("Bundle Scene Player").AddComponent<BundleScenePlayer>().gameObject);
+            bundleScenePlayer = new GameObject("Bundle Scene Player").AddComponent<BundleScenePlayer>();
 
-            new Patch_Door_KickOpen().Enable();
-            new Patch_WorldInteractiveObject_DoorStateChanged().Enable();
-            new Patch_TripwireSynchronizableObject_SetupGrenade().Enable();
+            DontDestroyOnLoad(bundleScenePlayer.gameObject);
 
-            new Patch_EnvironmentUIRoot_SetCameraActive().Enable();
-
-            new Patch_FirearmController_InitiateShot().Enable();
+            patchManager = new PatchManager(this, autoPatch: true);
+            patchManager.EnablePatches();
         }
 
         private void InitConfiguration()
@@ -90,6 +89,14 @@ namespace tarkin.Director.Bep
             SetActiveScene = Config.Bind("General", "SetActiveScene", false);
 
             InfiniteAmmo = Config.Bind("Gameplay", "InfiniteAmmo", false);
+        }
+
+        void OnDestroy()
+        {
+            GameObject.Destroy(bundleScenePlayer.gameObject);
+
+            patchManager.DisablePatches();
+            Log = null;
         }
     }
 }

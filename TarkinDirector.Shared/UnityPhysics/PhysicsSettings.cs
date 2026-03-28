@@ -6,7 +6,8 @@ namespace tarkin.Director.UnityPhysics
     {
         [SerializeField] private SimulationMode physicsMode = SimulationMode.Script;
 
-        [SerializeField] float fixedDeltaTime = 0.01666667f;
+        [Range(1, 120)]
+        [SerializeField] private int ticksPerSecond = 60;
 
         [SerializeField] int defaultSolverIterations = 3;
         [SerializeField] int defaultSolverVelocityIterations = 1;
@@ -15,7 +16,7 @@ namespace tarkin.Director.UnityPhysics
         {
             Physics.simulationMode = physicsMode;
 
-            Time.fixedDeltaTime = fixedDeltaTime;
+            Time.fixedDeltaTime = 1f / (float)ticksPerSecond;
 
             Physics.defaultSolverIterations = defaultSolverIterations;
             Physics.defaultSolverVelocityIterations = defaultSolverVelocityIterations;

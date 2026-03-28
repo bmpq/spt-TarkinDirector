@@ -19,6 +19,9 @@ namespace tarkin.Director.Bep.Patches
         [PatchPostfix]
         private static void PatchPostfix(Player.FirearmController __instance, IWeapon weapon, AmmoItemClass ammo)
         {
+            if (!Plugin.InfiniteAmmo.Value)
+                return;
+
             if (Singleton<GameWorld>.Instance.MainPlayer.HandsController != __instance)
                 return;
 

@@ -43,9 +43,6 @@ namespace tarkin.Director
 
         private IEnumerator DisableObjectsRoutine()
         {
-            // just in case
-            yield return new WaitForEndOfFrame();
-
             if (delay > 0)
                 yield return new WaitForSecondsRealtime(delay);
 

@@ -2,16 +2,16 @@
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
-    <AssemblyName>TarkinDirector</AssemblyName>
+    <AssemblyName>TarkinDirector.Bep</AssemblyName>
     <LangVersion>latest</LangVersion>
     <Version>0.1.0</Version>
     <Configurations>Debug;Release;SPT3_11</Configurations>
 
-    <DefineConstants>$(DefineConstants);EFT_RUNTIME</DefineConstants>
+    <DefineConstants>$(DefineConstants)</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup>
-    <RootNamespace>tarkin.Director</RootNamespace>
+    <RootNamespace>tarkin.Director.Bep</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -35,7 +35,14 @@
     
     <Reference Include="$(SPTPath)\EscapeFromTarkov_Data\Managed\*.dll" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TarkinDirector.Shared\TarkinDirector.Shared.csproj" />
+  </ItemGroup>
+  
   <Target Name="CopyDllAfterBuild" AfterTargets="Build">
-    <Copy SourceFiles="$(OutputPath)$(AssemblyName).dll" DestinationFolder="$(SPTPath)\BepInEx\plugins\tarkin" />
+    <Copy SourceFiles="$(OutputPath)TarkinDirector.Shared.dll" DestinationFolder="$(SPTPath)\BepInEx\plugins\tarkin" />
+    <Copy SourceFiles="$(OutputPath)TarkinDirector.Bep.dll" DestinationFolder="$(SPTPath)\BepInEx\scripts" />
+    <Copy SourceFiles="$(OutputPath)TarkinDirector.Bep.pdb" DestinationFolder="$(SPTPath)\BepInEx\scripts" />
   </Target>
 </Project>

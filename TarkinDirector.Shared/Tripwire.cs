@@ -11,10 +11,9 @@ using Comfort.Common;
 using EFT.InventoryLogic;
 using EFT;
 using HarmonyLib;
-using tarkin.Director.Bep.Patches;
 #endif
 
-namespace tarkin.Director
+namespace tarkin.Director.Bep
 {
     public class Tripwire : MonoBehaviour
     {
@@ -24,12 +23,8 @@ namespace tarkin.Director
         public string GrenadeGuid = "5e340dcdcb6d5863cc5e5efb";
 
 #if EFT_RUNTIME
-        TripwireSynchronizableObject realTripwire;
-
         void OnEnable()
         {
-            Patch_TripwireSynchronizableObject_SetupGrenade.OnPostfix += Patch_TripwireSynchronizableObject_SetupGrenade_OnPostfix;
-
             Item item = Singleton<ItemFactoryClass>.Instance.GetPresetItem(GrenadeGuid);
             if (item == null)
             {
@@ -39,27 +34,28 @@ namespace tarkin.Director
             Singleton<GameWorld>.Instance.PlantTripwire(item, Singleton<GameWorld>.Instance.MainPlayer.ProfileId, PosFrom, PosTo);
         }
 
-        private void Patch_TripwireSynchronizableObject_SetupGrenade_OnPostfix(TripwireSynchronizableObject realTripwire)
+        static bool ApproximatelyEquals(Vector3 self, Vector3 other, float epsilon)
         {
-            static bool ApproximatelyEquals(Vector3 self, Vector3 other, float epsilon)
-            {
-                if (epsilon < 0f) { epsilon = Mathf.Abs(epsilon); }
+            if (epsilon < 0f) { epsilon = Mathf.Abs(epsilon); }
 
-                return Mathf.Abs(self.x - other.x) <= epsilon &&
-                       Mathf.Abs(self.y - other.y) <= epsilon &&
-                       Mathf.Abs(self.z - other.z) <= epsilon;
-            }
-
-            // janky way to determine if the spawned tripwire is the one for this imposter
-            if (ApproximatelyEquals(PosFrom, realTripwire.FromPosition, 0.001f))
-            {
-                this.realTripwire = realTripwire;
-            }
+            return Mathf.Abs(self.x - other.x) <= epsilon &&
+                   Mathf.Abs(self.y - other.y) <= epsilon &&
+                   Mathf.Abs(self.z - other.z) <= epsilon;
         }
 
         void OnDisable()
         {
-            Patch_TripwireSynchronizableObject_SetupGrenade.OnPostfix -= Patch_TripwireSynchronizableObject_SetupGrenade_OnPostfix;
+            TripwireSynchronizableObject realTripwire = null;
+
+            foreach (TripwireSynchronizableObject tripwire in Singleton<GameWorld>.Instance.SynchronizableObjectLogicProcessor.TripwireManager.List_0)
+            {
+                // janky way to determine if the spawned tripwire is the one for this imposter
+                if (ApproximatelyEquals(PosFrom, tripwire.FromPosition, 0.001f))
+                {
+                    realTripwire = tripwire;
+                    break;
+                }
+            }
 
             if (realTripwire == null)
                 return;
@@ -75,10 +71,6 @@ namespace tarkin.Director
             catch (Exception ex)
             {
                 Debug.LogException(ex);
-            }
-            finally
-            {
-                realTripwire = null;
             }
         }
 #endif
