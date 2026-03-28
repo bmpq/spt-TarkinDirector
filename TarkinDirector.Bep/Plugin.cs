@@ -28,6 +28,9 @@ namespace tarkin.Director.Bep
 
         internal static ConfigEntry<bool> InfiniteAmmo;
 
+        internal static ConfigEntry<bool> OverrideMalfunctionChance;
+        internal static ConfigEntry<float> OverrideMalfunctionChanceFactor;
+
         private const int MAX_BUNDLE_SLOTS = 5;
         internal static List<ConfigEntry<string>> BundleSlots = new List<ConfigEntry<string>>();
 
@@ -89,6 +92,8 @@ namespace tarkin.Director.Bep
             SetActiveScene = Config.Bind("General", "SetActiveScene", false);
 
             InfiniteAmmo = Config.Bind("Gameplay", "InfiniteAmmo", false);
+            OverrideMalfunctionChance = Config.Bind("Gameplay", "OverrideMalfunctionChance", false);
+            OverrideMalfunctionChanceFactor = Config.Bind("Gameplay", "OverrideMalfunctionChancePercentage", 0f, new ConfigDescription("", new AcceptableValueRange<float>(0f, 1f)));
         }
 
         void OnDestroy()
