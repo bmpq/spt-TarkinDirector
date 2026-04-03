@@ -270,6 +270,11 @@ namespace tarkin.Director.EFTRuntime
 
             ReplaceShadersToNative(loadedScene);
 
+            yield return null; // let StaticDeferredDecal instances register themselves in OnEnable()
+
+            if (StaticDeferredDecalRenderer.Instance != null)
+                StaticDeferredDecalRenderer.Instance.UpdateInstancesBuffers();
+
             if (Plugin.SetActiveScene.Value)
                 SceneManager.SetActiveScene(loadedScene);
 
