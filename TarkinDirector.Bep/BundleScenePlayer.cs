@@ -339,5 +339,28 @@ namespace tarkin.Director.EFTRuntime
 
             Plugin.Log.LogInfo($"replaced {replacedShaderCount} shaders");
         }
+
+        void OnDestroy()
+        {
+            List<string> loadedPaths = loadedAssetBundles.Keys.ToList();
+
+            foreach (string fullPath in loadedPaths)
+            {
+                LoadedBundleInfo info = loadedAssetBundles[fullPath];
+                if (info != null)
+                {
+                    if (info.Scene.isLoaded)
+                        SceneManager.UnloadScene(info.Scene);
+                    info.Bundle.Unload(false);
+                }
+
+                loadedAssetBundles.Remove(fullPath);
+
+                if (!Plugin.Silent.Value)
+                    NotificationManagerClass.DisplayMessageNotification($"Unloading '{Path.GetFileName(fullPath)}'...");
+            }
+
+            cameraProxies.Clear();
+        }
     }
 }

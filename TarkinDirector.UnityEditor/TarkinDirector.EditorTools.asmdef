@@ -2,7 +2,7 @@
     "name": "TarkinDirector.EditorTools",
     "rootNamespace": "tarkin.Director.EditorTools",
     "references": [
-        "TarkinDirector"
+        "TarkinDirector.Shared"
     ],
     "includePlatforms": [
         "Editor",

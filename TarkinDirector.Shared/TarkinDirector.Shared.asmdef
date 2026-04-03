@@ -1,6 +1,6 @@
 {
-    "name": "TarkinDirector",
-    "rootNamespace": "tarkin.Director",
+    "name": "TarkinDirector.Shared",
+    "rootNamespace": "tarkin.Director.Shared",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
