@@ -54,7 +54,7 @@ namespace tarkin.Director.EFTRuntime
                 }
                 else
                 {
-                    NotificationManagerClass.DisplayWarningNotification($"Busy!");
+                    Plugin.Logger.LogWarning("Busy!");
                 }
             }
 
@@ -70,13 +70,12 @@ namespace tarkin.Director.EFTRuntime
                     }
                     else
                     {
-                        NotificationManagerClass.DisplayWarningNotification("No bundles configured in settings!");
+                        Plugin.Logger.LogWarning("No bundles configured in settings!");
                     }
                 }
                 else
                 {
-                    if (!Plugin.Silent.Value)
-                        NotificationManagerClass.DisplayWarningNotification($"Busy!");
+                    Plugin.Logger.LogWarning("Busy!");
                 }
             }
 
@@ -128,7 +127,7 @@ namespace tarkin.Director.EFTRuntime
 
             if (activeProxyCamera == null)
             {
-                Plugin.Log.LogError("No proxy cameras on the loaded scene!");
+                Plugin.Logger.LogError("No proxy cameras on the loaded scene!");
                 return;
             }
 
@@ -198,8 +197,7 @@ namespace tarkin.Director.EFTRuntime
                 yield break;
             }
 
-            if (!Plugin.Silent.Value)
-                NotificationManagerClass.DisplayMessageNotification($"Unloading '{Path.GetFileName(fullPath)}'...");
+            Plugin.Logger.LogInfo($"Unloading '{Path.GetFileName(fullPath)}'...");
 
             cameraProxies.Clear();
 
@@ -212,22 +210,23 @@ namespace tarkin.Director.EFTRuntime
                 }
             }
 
-            info.Bundle.Unload(true);
+            info.Bundle.Unload(unloadAllLoadedObjects: false);
             loadedAssetBundles.Remove(fullPath);
 
             Resources.UnloadUnusedAssets();
+
+            Plugin.Logger.LogInfo($"Unloaded '{Path.GetFileName(fullPath)}'");
         }
 
         IEnumerator LoadBundleRoutine(string fullPath)
         {
             if (!File.Exists(fullPath))
             {
-                NotificationManagerClass.DisplayWarningNotification($"Bundle not found: '{Path.GetFileName(fullPath)}'");
+                Plugin.Logger.LogWarning($"Bundle not found: '{Path.GetFileName(fullPath)}'");
                 yield break;
             }
 
-            if (!Plugin.Silent.Value)
-                NotificationManagerClass.DisplayMessageNotification($"Loading '{Path.GetFileName(fullPath)}'...");
+            Plugin.Logger.LogInfo($"Loading '{Path.GetFileName(fullPath)}'...");
 
             AssetBundleCreateRequest bundleRequest = AssetBundle.LoadFromFileAsync(fullPath);
             yield return bundleRequest;
@@ -235,14 +234,14 @@ namespace tarkin.Director.EFTRuntime
             AssetBundle assetBundle = bundleRequest.assetBundle;
             if (assetBundle == null)
             {
-                NotificationManagerClass.DisplayWarningNotification($"Error loading asset bundle!");
+                Plugin.Logger.LogError($"Error loading asset bundle on {fullPath}");
                 yield break;
             }
 
             string[] scenePaths = assetBundle.GetAllScenePaths();
             if (scenePaths.Length == 0)
             {
-                NotificationManagerClass.DisplayWarningNotification($"'{Path.GetFileName(fullPath)}' is not a scene bundle!");
+                Plugin.Logger.LogError($"'{Path.GetFileName(fullPath)}' is not a scene bundle! Unloading...");
                 assetBundle?.Unload(false);
                 yield break;
             }
@@ -257,13 +256,13 @@ namespace tarkin.Director.EFTRuntime
             Scene loadedScene = SceneManager.GetSceneByName(sceneName);
             if (!loadedScene.isLoaded)
             {
-                NotificationManagerClass.DisplayWarningNotification($"Failed to load scene '{sceneName}' from bundle.");
+                Plugin.Logger.LogError($"Failed to load scene '{sceneName}' from bundle.");
                 assetBundle?.Unload(true);
                 yield break;
             }
 
             cameraProxies = FindSceneCameras(loadedScene);
-            Plugin.Log.LogInfo($"found {cameraProxies.Count} camera proxies");
+            Plugin.Logger.LogInfo($"found {cameraProxies.Count} camera proxies");
 
             var bundleInfo = new LoadedBundleInfo(assetBundle, loadedScene);
             loadedAssetBundles.Add(fullPath, bundleInfo);
@@ -283,8 +282,7 @@ namespace tarkin.Director.EFTRuntime
                 Singleton<Effects>.Instance?.ClearDecal();
             }
 
-            if (!Plugin.Silent.Value)
-                NotificationManagerClass.DisplayMessageNotification($"'{Path.GetFileName(fullPath)}': Scene loaded successfully.");
+            Plugin.Logger.LogInfo($"'{Path.GetFileName(fullPath)}': Scene loaded successfully.");
         }
 
         void TogglePlayerCameraController(bool on)
@@ -332,7 +330,14 @@ namespace tarkin.Director.EFTRuntime
                         if (mat != null && mat.shader != null)
                         {
                             Shader nativeShader = Shader.Find(mat.shader.name);
-                            if (nativeShader != null && mat.shader != nativeShader)
+
+                            if (nativeShader == null)
+                            {
+                                Plugin.Logger.LogWarning($"'{mat.shader.name}' shader not found in runtime!");
+                                continue;
+                            }
+
+                            if (mat.shader != nativeShader)
                             {
                                 mat.shader = nativeShader;
                                 replacedShaderCount++;
@@ -342,9 +347,10 @@ namespace tarkin.Director.EFTRuntime
                 }
             }
 
-            Plugin.Log.LogInfo($"replaced {replacedShaderCount} shaders");
+            Plugin.Logger.LogInfo($"replaced {replacedShaderCount} shaders");
         }
 
+        // hot reload is unloading the plugin
         void OnDestroy()
         {
             List<string> loadedPaths = loadedAssetBundles.Keys.ToList();
@@ -355,14 +361,13 @@ namespace tarkin.Director.EFTRuntime
                 if (info != null)
                 {
                     if (info.Scene.isLoaded)
-                        SceneManager.UnloadScene(info.Scene);
-                    info.Bundle.Unload(false);
+                        SceneManager.UnloadScene(info.Scene); // unity docs says this is unsafe, but we have to do it wihtout Async because hot reloading might reload the plugin too soon
+                    info.Bundle.Unload(unloadAllLoadedObjects: false); // let tarkov's resource management handle unreferenced assets
                 }
 
                 loadedAssetBundles.Remove(fullPath);
 
-                if (!Plugin.Silent.Value)
-                    NotificationManagerClass.DisplayMessageNotification($"Unloading '{Path.GetFileName(fullPath)}'...");
+                Plugin.Logger.LogInfo($"Unloaded '{Path.GetFileName(fullPath)}'");
             }
 
             cameraProxies.Clear();

@@ -7,7 +7,7 @@
     <Version>0.1.0</Version>
     <Configurations>Debug;Release;SPT3_11</Configurations>
 
-    <DefineConstants>$(DefineConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);SPT_4_0</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup>

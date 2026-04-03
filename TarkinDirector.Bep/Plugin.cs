@@ -13,7 +13,7 @@ namespace tarkin.Director.Bep
     [BepInPlugin("com.tarkin.bundlesceneplayer", MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
     internal class Plugin : BaseUnityPlugin
     {
-        internal static new ManualLogSource Log;
+        internal static new EFTLogger Logger;
 
         internal static ConfigEntry<string> BundleName;
         internal static ConfigEntry<float> CameraOverrideHandoverSpeed;
@@ -22,7 +22,7 @@ namespace tarkin.Director.Bep
         internal static ConfigEntry<KeyboardShortcut> KeybindUnloadAll;
 
         internal static ConfigEntry<string> PrewarmAssemblies;
-        internal static ConfigEntry<bool> Silent;
+        internal static ConfigEntry<bool> DisplayLogInGame;
         internal static ConfigEntry<bool> CleanDecals;
         internal static ConfigEntry<bool> SetActiveScene;
 
@@ -54,7 +54,10 @@ namespace tarkin.Director.Bep
         {
             InitConfiguration();
 
-            Log = base.Logger;
+            Logger = new EFTLogger(this, () => DisplayLogInGame.Value);
+            BepInEx.Logging.Logger.Sources.Add(Logger);
+
+            Logger.LogInfo("Plugin loaded");
 
             bundleScenePlayer = new GameObject("Bundle Scene Player").AddComponent<BundleScenePlayer>();
 
@@ -87,7 +90,7 @@ namespace tarkin.Director.Bep
             KeybindUnloadAll = Config.Bind("Keybinds", "Keybind Unload All", new KeyboardShortcut(KeyCode.Delete));
             KeybindToggleCameraOverride = Config.Bind("Keybinds", "KeybindToggleCameraOverride", new KeyboardShortcut(KeyCode.PageUp));
 
-            Silent = Config.Bind("General", "Silent", false);
+            DisplayLogInGame = Config.Bind("General", "DisplayLogInGame", true);
             CleanDecals = Config.Bind("General", "CleanDecalsOnLoad", true);
             SetActiveScene = Config.Bind("General", "SetActiveScene", false);
 
@@ -101,7 +104,9 @@ namespace tarkin.Director.Bep
             GameObject.Destroy(bundleScenePlayer.gameObject);
 
             patchManager.DisablePatches();
-            Log = null;
+
+            BepInEx.Logging.Logger.Sources.Remove(Logger);
+            Logger = null;
         }
     }
 }
