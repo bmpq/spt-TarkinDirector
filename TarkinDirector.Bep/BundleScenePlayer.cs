@@ -131,19 +131,30 @@ namespace tarkin.Director.EFTRuntime
                 return;
             }
 
-            if (CameraClass.Instance.Camera == null)
+            Camera realCamera = CameraClass.Instance.Camera;
+
+            if (realCamera == null)
             {
-                CameraClass.Instance.Camera = new GameObject("can").AddComponent<Camera>(); 
-                
-                CameraClass.Instance.Camera.gameObject.tag = "MainCamera";
+                Plugin.Logger.LogError("No real camera exists in current raid!");
+                return;
             }
 
-            CameraClass.Instance.Camera.gameObject.SetActive(true);
-            CameraClass.Instance.Camera.transform.position = Vector3.Lerp(CameraClass.Instance.Camera.transform.position, activeProxyCamera.transform.position, t);
-            CameraClass.Instance.Camera.transform.rotation = Quaternion.Lerp(CameraClass.Instance.Camera.transform.rotation, activeProxyCamera.transform.rotation, t);
-            CameraClass.Instance.Camera.fieldOfView = Mathf.Lerp(CameraClass.Instance.Camera.fieldOfView, activeProxyCamera.fieldOfView, t);
-            CameraClass.Instance.Camera.nearClipPlane = activeProxyCamera.nearClipPlane;
-            CameraClass.Instance.Camera.farClipPlane = activeProxyCamera.farClipPlane;
+            realCamera.gameObject.SetActive(true);
+
+            realCamera.transform.position = Vector3.Lerp(
+                realCamera.transform.position, 
+                activeProxyCamera.transform.position, t);
+
+            realCamera.transform.rotation = Quaternion.Lerp(
+                realCamera.transform.rotation, 
+                activeProxyCamera.transform.rotation, t);
+
+            realCamera.fieldOfView = Mathf.Lerp(
+                realCamera.fieldOfView, 
+                activeProxyCamera.fieldOfView, t);
+
+            realCamera.nearClipPlane = activeProxyCamera.nearClipPlane;
+            realCamera.farClipPlane = activeProxyCamera.farClipPlane;
         }
 
         IEnumerator UnloadAllBundlesRoutine()
@@ -261,7 +272,7 @@ namespace tarkin.Director.EFTRuntime
                 yield break;
             }
 
-            cameraProxies = FindSceneCameras(loadedScene);
+            cameraProxies = FindSceneCamerasAndMakeProxies(loadedScene);
             Plugin.Logger.LogInfo($"found {cameraProxies.Count} camera proxies");
 
             var bundleInfo = new LoadedBundleInfo(assetBundle, loadedScene);
@@ -277,9 +288,9 @@ namespace tarkin.Director.EFTRuntime
             if (Plugin.SetActiveScene.Value)
                 SceneManager.SetActiveScene(loadedScene);
 
-            if (Plugin.CleanDecals.Value)
+            if (Plugin.CleanDecals.Value && Singleton<Effects>.Instantiated)
             {
-                Singleton<Effects>.Instance?.ClearDecal();
+                Singleton<Effects>.Instance.ClearDecal();
             }
 
             Plugin.Logger.LogInfo($"'{Path.GetFileName(fullPath)}': Scene loaded successfully.");
@@ -300,7 +311,7 @@ namespace tarkin.Director.EFTRuntime
             }
         }
 
-        List<Camera> FindSceneCameras(Scene scene)
+        List<Camera> FindSceneCamerasAndMakeProxies(Scene scene)
         {
             List<Camera> cameraProxies = new List<Camera>();
             foreach (GameObject rootGameObject in scene.GetRootGameObjects())
@@ -371,6 +382,8 @@ namespace tarkin.Director.EFTRuntime
             }
 
             cameraProxies.Clear();
+
+            dummyRenderTexture.Release();
         }
     }
 }
