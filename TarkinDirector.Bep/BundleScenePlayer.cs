@@ -1,4 +1,5 @@
-﻿using Comfort.Common;
+﻿using Audio.SpatialSystem;
+using Comfort.Common;
 using EFT;
 using EFT.CameraControl;
 using System.Collections;
@@ -6,6 +7,8 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Systems.Effects;
 using tarkin.Director.Bep;
 using tarkin.Director.Bep.Patches;
@@ -293,7 +296,34 @@ namespace tarkin.Director.EFTRuntime
                 Singleton<Effects>.Instance.ClearDecal();
             }
 
+            if (Singleton<SpatialAudioSystem>.Instantiated && 
+                TryGetComponentInScene<SpatialAudioCrossSceneGroup>(loadedScene, out var audio))
+            {
+                Plugin.Logger.LogInfo($"Found '{typeof(SpatialAudioCrossSceneGroup)}' on loaded scene. Reinitializing {typeof(SpatialAudioSystem)}...");
+                yield return null;
+
+                Task task = Singleton<SpatialAudioSystem>.Instance.Initialize(CancellationToken.None, null);
+                while (!task.IsCompleted)
+                    yield return null;
+
+                Singleton<SpatialAudioSystem>.Instance.method_4();
+            }
+
             Plugin.Logger.LogInfo($"'{Path.GetFileName(fullPath)}': Scene loaded successfully.");
+        }
+
+        bool TryGetComponentInScene<T>(Scene scene, out T component) where T : Component
+        {
+            component = default;
+
+            foreach (GameObject rootGameObject in scene.GetRootGameObjects())
+            {
+                component = rootGameObject.GetComponentInChildren<T>(true);
+                if (component != null)
+                    return true;
+            }
+
+            return false;
         }
 
         void TogglePlayerCameraController(bool on)
