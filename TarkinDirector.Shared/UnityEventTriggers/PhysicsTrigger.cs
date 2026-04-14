@@ -1,12 +1,13 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.Events;
 
 namespace tarkin.Director
 {
     [RequireComponent(typeof(Collider))]
-    internal class PhysicsTrigger : MonoBehaviour
+    public class PhysicsTrigger : MonoBehaviour
     {
-        enum Condition
+        public enum Condition
         {
             Enter,
             Exit
@@ -22,7 +23,6 @@ namespace tarkin.Director
         void OnValidate()
         {
             GetComponent<Collider>().isTrigger = true;
-            gameObject.layer = 13;
         }
 
         void OnTriggerEnter(Collider other)

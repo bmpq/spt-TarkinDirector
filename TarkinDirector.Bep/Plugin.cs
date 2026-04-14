@@ -1,11 +1,9 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
-using BepInEx.Logging;
 using System.IO;
 using UnityEngine;
 using System.Collections.Generic;
 using tarkin.Director.EFTRuntime;
-using tarkin.Director.Bep.Patches;
 using SPT.Reflection.Patching;
 
 namespace tarkin.Director.Bep
@@ -49,6 +47,8 @@ namespace tarkin.Director.Bep
 
         private PatchManager patchManager;
         private BundleScenePlayer bundleScenePlayer;
+
+        private Video_JetEngine video;
 
         private void Start()
         {
@@ -101,6 +101,8 @@ namespace tarkin.Director.Bep
 
         void OnDestroy()
         {
+            video?.Dispose();
+
             GameObject.Destroy(bundleScenePlayer.gameObject);
 
             patchManager.DisablePatches();
