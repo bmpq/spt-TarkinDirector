@@ -286,7 +286,10 @@ namespace tarkin.Director.EFTRuntime
             yield return null; // let StaticDeferredDecal instances register themselves in OnEnable()
 
             if (StaticDeferredDecalRenderer.Instance != null)
-                StaticDeferredDecalRenderer.Instance.UpdateInstancesBuffers();
+            {
+                try { StaticDeferredDecalRenderer.Instance.UpdateInstancesBuffers(); }
+                catch { }
+            }
 
             if (Plugin.SetActiveScene.Value)
                 SceneManager.SetActiveScene(loadedScene);
@@ -399,7 +402,7 @@ namespace tarkin.Director.EFTRuntime
             foreach (string fullPath in loadedPaths)
             {
                 LoadedBundleInfo info = loadedAssetBundles[fullPath];
-                if (info != null)
+                if (info != null && info.Bundle != null)
                 {
                     if (info.Scene.isLoaded)
                         SceneManager.UnloadScene(info.Scene); // unity docs says this is unsafe, but we have to do it wihtout Async because hot reloading might reload the plugin too soon

@@ -29,7 +29,7 @@ namespace tarkin.Director.Bep
         internal static ConfigEntry<bool> OverrideMalfunctionChance;
         internal static ConfigEntry<float> OverrideMalfunctionChanceFactor;
 
-        private const int MAX_BUNDLE_SLOTS = 5;
+        private const int MAX_BUNDLE_SLOTS = 8;
         internal static List<ConfigEntry<string>> BundleSlots = new List<ConfigEntry<string>>();
 
         public static List<string> GetConfiguredBundlePaths()
@@ -47,8 +47,6 @@ namespace tarkin.Director.Bep
 
         private PatchManager patchManager;
         private BundleScenePlayer bundleScenePlayer;
-
-        private Video_JetEngine video;
 
         private void Start()
         {
@@ -101,8 +99,6 @@ namespace tarkin.Director.Bep
 
         void OnDestroy()
         {
-            video?.Dispose();
-
             GameObject.Destroy(bundleScenePlayer.gameObject);
 
             patchManager.DisablePatches();
